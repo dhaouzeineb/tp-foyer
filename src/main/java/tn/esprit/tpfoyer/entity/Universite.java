@@ -18,7 +18,7 @@ public class Universite {
     long idUniversite;
 
     String nomUniversite;
-
+//mnifmed was here
     String adresse;
 
     @OneToOne(cascade = CascadeType.ALL)
