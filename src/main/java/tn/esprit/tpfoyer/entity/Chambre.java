@@ -25,6 +25,7 @@ public class Chambre {
 
     @Enumerated(EnumType.STRING)
     TypeChambre typeC;
+    //wissal
 
 
 
