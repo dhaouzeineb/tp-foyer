@@ -1,0 +1,12 @@
+pipeline {
+  agent any
+  stages {
+    stage('Scan') {
+      steps {
+        withSonarQubeEnv(installationName: 'sq1') { 
+          sh './mvnw sonar:sonar -Dsonar.host.url=http://192.168.33.10:9000'
+        }
+      }
+    }
+  }
+}
