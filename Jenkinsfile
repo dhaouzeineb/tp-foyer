@@ -1,103 +1,51 @@
 pipeline {
-
     agent any
- 
     environment {
-
-        SCANNER_HOME = tool 'SonarQube'  // Déclarer l'outil SonarQube Scanner
-
+        SCANNER_HOME = tool 'SonarQube'  // Declare the SonarQube Scanner tool
     }
- 
     stages {
-
         stage('Checkout') {
-
             steps {
-
-                // Récupérer le code du dépôt Git en spécifiant la branche
-
+                // Get code from the Git repository and specify the branch
                 git branch: 'hassen', credentialsId: 'GitHub-Credentials', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
-
             }
-
         }
-
         stage('Build') {
-
             steps {
-
-                // Commande pour nettoyer le projet
-
+                // Command to clean the project
                 sh 'mvn clean'
-
             }
-
         }
-
         stage('Compile') {
-
             steps {
-
-                // Commande pour compiler le projet
-
+                // Command to compile the project
                 sh 'mvn compile'
-
             }
-
         }
-
         stage('SonarQube Analysis') {
-
             steps {
-
-                // Configuration de l'analyse SonarQube
-
+                // Configure SonarQube analysis
                 withSonarQubeEnv('SonarQubeToken') {
-
-                    sh '''
-
+                    sh """
                         $SCANNER_HOME/bin/sonar-scanner \
-
-                        -Dsonar.projectKey=sonar-qube-analysis \
-
-                        -Dsonar.projectName=sonar-qube-analysis \
-
+                        -Dsonar.projectKey=tp-foyer-project \
+                        -Dsonar.projectName=tp-foyer \
                         -Dsonar.sources=src \
-
                         -Dsonar.java.binaries=target/classes
-
-                    '''
-
+                    """
                 }
-
             }
-
         }
-
     }
- 
     post {
-
         always {
-
-            echo 'Pipeline terminé, nettoyage...'
-
+            echo 'Pipeline completed, cleaning up...'
         }
-
         success {
-
-            echo 'Pipeline exécuté avec succès !'
-
+            echo 'Pipeline executed successfully!'
         }
-
         failure {
-
-            echo 'Échec du pipeline.'
-
+            echo 'Pipeline failed.'
         }
-
     }
-
 }
-
- 
