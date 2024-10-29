@@ -1,0 +1,36 @@
+pipeline {
+  agent any
+  stages {
+    stage('Checkout') {
+      steps {
+        // Récupération du code source depuis le dépôt Git
+        checkout scm
+      }
+    }
+    stage('Build') {
+      steps {
+        // Construction du projet
+        sh 'mvn clean install'
+      }
+    }
+    stage('Scan') {
+      steps {
+        // Exécution de l'analyse SonarQube
+        withSonarQubeEnv('sonarqube1') {
+          sh 'mvn sonar:sonar'
+        }
+      }
+    }
+  }
+  post {
+    always {
+      echo 'Pipeline terminé.'
+    }
+    success {
+      echo 'Pipeline réussi.'
+    }
+    failure {
+      echo 'Pipeline échoué.'
+    }
+  }
+}
