@@ -7,7 +7,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Get code from the Git repository and specify the branch
-                git branch: 'zeineb', credentialsId: 'GitHub-Credentials', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
+                git branch: 'zeineb', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
             }
         }
         stage('Build') {
