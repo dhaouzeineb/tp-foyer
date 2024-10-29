@@ -1,51 +1,37 @@
 pipeline {
     agent any
-    environment {
-        SCANNER_HOME = tool 'SonarQube'  // Declare the SonarQube Scanner tool
-    }
     stages {
         stage('Checkout') {
             steps {
-                // Get code from the Git repository and specify the branch
-                git branch: 'zeineb', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
+                // Récupérer le code de votre dépôt Git
+                git url: 'https://github.com/dhaouzeineb/tp-foyer.git', branch: 'zeineb'
             }
         }
         stage('Build') {
             steps {
-                // Command to clean the project
-                sh 'mvn clean'
-            }
-        }
-        stage('Compile') {
-            steps {
-                // Command to compile the project
-                sh 'mvn compile'
+                // Compiler le code avec Maven
+                sh 'mvn clean compile'
             }
         }
         stage('SonarQube Analysis') {
             steps {
-                // Configure SonarQube analysis
-                withSonarQubeEnv('SonarQubeToken') {
-                    sh """
-                        $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectKey=tp-foyer-project \
-                        -Dsonar.projectName=tp-foyer \
-                        -Dsonar.sources=src \
-                        -Dsonar.java.binaries=target/classes
-                    """
+                script {
+                    // Spécifiez le chemin d'installation du scanner SonarQube
+                    def scannerHome = tool 'SonarQube Scanner'
+                    withSonarQubeEnv('sonarqube1') {
+                        // Exécutez l'analyse SonarQube
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
                 }
             }
         }
     }
     post {
-        always {
-            echo 'Pipeline completed, cleaning up...'
-        }
         success {
-            echo 'Pipeline executed successfully!'
+            echo 'SonarQube analysis completed successfully.'
         }
         failure {
-            echo 'Pipeline failed.'
+            echo 'SonarQube analysis failed.'
         }
     }
 }
