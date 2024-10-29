@@ -1,5 +1,6 @@
 pipeline {
     agent any
+
     stages {
         stage('Checkout') {
             steps {
@@ -7,25 +8,38 @@ pipeline {
                 git url: 'https://github.com/dhaouzeineb/tp-foyer.git', branch: 'zeineb'
             }
         }
+
         stage('Build') {
             steps {
                 // Compiler le code avec Maven
                 sh 'mvn clean compile'
             }
         }
-        stage('SonarQube Analysis') {
+
+        stage('Build & SonarQube Analysis') {
             steps {
-                script {
-                    // Spécifiez le chemin d'installation du scanner SonarQube
-                    def scannerHome = tool 'SonarQube Scanner'
-                    withSonarQubeEnv('sonarqube1') {
-                        // Exécutez l'analyse SonarQube
-                        sh "${scannerHome}/bin/sonar-scanner"
+                // Analyser le code avec SonarQube
+                withSonarQubeEnv('sonarqube1') {
+                    sh 'mvn clean package sonar:sonar -Dsonar.projectKey=NomDuProjet -Dsonar.host.url=http://192.168.33.10:9000 -Dsonar.login=squ_34db5d57c4cbfc95900db36f7f40aeab2d9c5a4d'
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                // Attendre la réponse de SonarQube pour la qualité du code
+                timeout(time: 1, unit: 'HOURS') {
+                    script {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                        }
                     }
                 }
             }
         }
     }
+
     post {
         success {
             echo 'SonarQube analysis completed successfully.'
@@ -35,3 +49,4 @@ pipeline {
         }
     }
 }
+
