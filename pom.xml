@@ -45,8 +45,6 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.1.0</version>
         </dependency>
-            <!-- Other dependencies -->
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -57,8 +55,6 @@
             <artifactId>spring-boot-test</artifactId>
             <version>3.3.1</version>
         </dependency>
-
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -69,8 +65,6 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>5.11.0</version>
         </dependency>
-
-
     </dependencies>
 
     <build>
@@ -85,6 +79,17 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <!-- Add Maven Surefire Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M5</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
                 </configuration>
             </plugin>
         </plugins>
@@ -114,3 +119,4 @@
         </repository>
     </repositories>
 </project>
+
