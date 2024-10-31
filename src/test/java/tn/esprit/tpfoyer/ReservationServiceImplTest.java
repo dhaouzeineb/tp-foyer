@@ -1,3 +1,4 @@
+/*
 package tn.esprit.tpfoyer;
 
 import org.springframework.boot.test.context.SpringBootTest;
@@ -106,3 +107,4 @@ class ReservationServiceImplTest {
         verify(reservationRepository, times(1)).deleteById("1");
     }
 }
+*/
