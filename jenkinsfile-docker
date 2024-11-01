@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('dockerHub') // ID des credentials Jenkins pour Docker Hub
+        DOCKER_COMPOSE_PATH = '/home/vagrant/tp-foyer' // Remplacez par le chemin réel
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    docker.build("zeinebdhaou-5nids-backend").push("latest")
+                    docker.build("zeinebdhaou-5nids-mysql").push("latest")
+                }
+            }
+        }
+
+        stage('Deploy with Docker Compose') {
+            steps {
+                script {
+                    sh "docker-compose -f ${DOCKER_COMPOSE_PATH} pull" // Récupérer les images mises à jour
+                    sh "docker-compose -f ${DOCKER_COMPOSE_PATH} up -d" // Redémarrer les services
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
