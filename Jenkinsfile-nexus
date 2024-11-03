@@ -2,17 +2,30 @@ pipeline {
     agent any
 
     environment {
-        NEXUS_URL = 'http://192.168.33.10:8081/nexus' // Remplacez avec l'URL de votre Nexus
-        NEXUS_REPO = 'nexus-jenkins' // Nom de votre dépôt Nexus
-        CREDENTIALS_ID = 'nexus-credentials' // ID des credentials Jenkins pour Nexus
+        NEXUS_URL = 'http://192.168.33.10:8081/nexus'
+        NEXUS_REPO = 'nexus-jenkins'
+        CREDENTIALS_ID = 'nexus-credentials' // Remplacez par votre ID de credentials
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Build') {
             steps {
                 script {
-                    // Compile et package le projet avec Maven
-                    sh 'mvn clean install'
+                    sh 'mvn clean package'
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    sh 'mvn test'
                 }
             }
         }
@@ -21,23 +34,25 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: "${CREDENTIALS_ID}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
-                        // Déploiement sur Nexus en utilisant la commande Maven
-                        try {
-                            sh """
-                            mvn deploy:deploy-file -Durl=${NEXUS_URL}/repository/${NEXUS_REPO}
-                                                    -DrepositoryId=${NEXUS_REPO}
-                                                    -Dfile=target/nomDuFichier.jar
-                                                    -DgroupId=com.example
-                                                    -DartifactId=nomDuProjet
-                                                    -Dversion=1.0.0
-                                                    -Dpackaging=jar
-                                                    -DgeneratePom=true
-                                                    -Dusername=${USERNAME}
-                                                    -Dpassword=${PASSWORD}
-                            """
-                        } catch (Exception e) {
-                            error "Échec du déploiement : ${e.getMessage()}"
-                        }
+                        def jarFilePath = "${env.WORKSPACE}/target/tp-foyer-5.0.0.jar"
+
+                        // Vérification de l'existence du fichier JAR
+                        sh "ls -l ${jarFilePath}"
+
+                        // Commande de déploiement
+                        sh """
+                        mvn deploy:deploy-file \
+                            -Durl=${NEXUS_URL}/repository/${NEXUS_REPO} \
+                            -DrepositoryId=${NEXUS_REPO} \
+                            -Dfile=${jarFilePath} \
+                            -DgroupId=tn.esprit \
+                            -DartifactId=tp-foyer \
+                            -Dversion=5.0.0 \
+                            -Dpackaging=jar \
+                            -DgeneratePom=true \
+                            -Dusername=${USERNAME} \
+                            -Dpassword=${PASSWORD}
+                        """
                     }
                 }
             }
@@ -46,12 +61,13 @@ pipeline {
 
     post {
         success {
-            echo 'Déploiement réussi sur Nexus'
+            echo 'Le déploiement a réussi !'
         }
         failure {
-            echo 'Échec du déploiement sur Nexus'
+            echo 'Échec du déploiement.'
         }
     }
 }
+
 
 
