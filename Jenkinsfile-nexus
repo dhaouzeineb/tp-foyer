@@ -24,15 +24,15 @@ pipeline {
                         // Déploiement sur Nexus en utilisant la commande Maven
                         try {
                             sh """
-                            mvn deploy:deploy-file -Durl=${NEXUS_URL}/repository/${NEXUS_REPO} \
-                                                    -DrepositoryId=${NEXUS_REPO} \
-                                                    -Dfile=target/nomDuFichier.jar \ // Assurez-vous que ce fichier existe
-                                                    -DgroupId=com.example \
-                                                    -DartifactId=nomDuProjet \
-                                                    -Dversion=1.0.0 \
-                                                    -Dpackaging=jar \
-                                                    -DgeneratePom=true \
-                                                    -Dusername=${USERNAME} \
+                            mvn deploy:deploy-file -Durl=${NEXUS_URL}/repository/${NEXUS_REPO}
+                                                    -DrepositoryId=${NEXUS_REPO}
+                                                    -Dfile=target/nomDuFichier.jar
+                                                    -DgroupId=com.example
+                                                    -DartifactId=nomDuProjet
+                                                    -Dversion=1.0.0
+                                                    -Dpackaging=jar
+                                                    -DgeneratePom=true
+                                                    -Dusername=${USERNAME}
                                                     -Dpassword=${PASSWORD}
                             """
                         } catch (Exception e) {
@@ -53,4 +53,5 @@ pipeline {
         }
     }
 }
+
 
