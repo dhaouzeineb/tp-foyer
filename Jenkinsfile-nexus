@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         NEXUS_URL = 'http://192.168.33.10:8081/nexus'
-        NEXUS_REPO = 'nexus-jenkins'
+        NEXUS_REPO = 'nexus'
         CREDENTIALS_ID = 'nexus-credentials' // Remplacez par votre ID de credentials
     }
 
