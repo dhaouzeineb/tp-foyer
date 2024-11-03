@@ -22,18 +22,22 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: "${CREDENTIALS_ID}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
                         // Déploiement sur Nexus en utilisant la commande Maven
-                        sh """
-                        mvn deploy:deploy-file -Durl=${NEXUS_URL}/repository/${NEXUS_REPO} \
-                                                -DrepositoryId=${NEXUS_REPO} \
-                                                -Dfile=target/nomDuFichier.jar \
-                                                -DgroupId=com.example \
-                                                -DartifactId=nomDuProjet \
-                                                -Dversion=1.0.0 \
-                                                -Dpackaging=jar \
-                                                -DgeneratePom=true \
-                                                -Dusername=${USERNAME} \
-                                                -Dpassword=${PASSWORD}
-                        """
+                        try {
+                            sh """
+                            mvn deploy:deploy-file -Durl=${NEXUS_URL}/repository/${NEXUS_REPO} \
+                                                    -DrepositoryId=${NEXUS_REPO} \
+                                                    -Dfile=target/nomDuFichier.jar \ // Assurez-vous que ce fichier existe
+                                                    -DgroupId=com.example \
+                                                    -DartifactId=nomDuProjet \
+                                                    -Dversion=1.0.0 \
+                                                    -Dpackaging=jar \
+                                                    -DgeneratePom=true \
+                                                    -Dusername=${USERNAME} \
+                                                    -Dpassword=${PASSWORD}
+                            """
+                        } catch (Exception e) {
+                            error "Échec du déploiement : ${e.getMessage()}"
+                        }
                     }
                 }
             }
@@ -49,3 +53,4 @@ pipeline {
         }
     }
 }
+
