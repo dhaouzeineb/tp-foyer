@@ -32,7 +32,7 @@ pipeline {
 
         stage('Upload to Nexus') {
             steps {
-                withCredentials([usernamePassword(credentialsId: "${CREDENTIALS_ID}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: "${CREDENTIALS_ID}", usernameVariable: 'admin', passwordVariable: 'admin')]) {
                     script {
                         def jarFilePath = "${env.WORKSPACE}/target/tp-foyer-5.0.0.jar"
 
