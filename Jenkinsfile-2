@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        SCANNER_HOME = tool 'SonarQube' 
+        SCANNER_HOME = tool 'SonarQube'  // Declare the SonarQube Scanner tool
     }
     stages {
         stage('Checkout') {
@@ -10,8 +10,21 @@ pipeline {
                 git branch: 'hassen', credentialsId: 'GitHub-Credentials', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
             }
         }
+        stage('Build') {
+            steps {
+                // Command to clean the project
+                sh 'mvn clean'
+            }
+        }
+        stage('Compile') {
+            steps {
+                // Command to compile the project
+                sh 'mvn compile'
+            }
+        }
         stage('SonarQube Analysis') {
             steps {
+                // Configure SonarQube analysis
                 withSonarQubeEnv('SonarQubeToken') {
                     sh """
                         $SCANNER_HOME/bin/sonar-scanner \
