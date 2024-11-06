@@ -31,7 +31,8 @@ pipeline {
                         -Dsonar.projectKey=tp-foyer-project \
                         -Dsonar.projectName=tp-foyer \
                         -Dsonar.sources=src \
-                        -Dsonar.java.binaries=target/classes
+                        -Dsonar.java.binaries=target/classes \
+                        -Dsonar.branch.name=louay
                     """
                 }
             }
