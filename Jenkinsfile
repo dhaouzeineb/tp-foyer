@@ -24,15 +24,14 @@ pipeline {
         }
         stage('SonarQube Analysis') {
             steps {
-                // Configure SonarQube analysis
                 withSonarQubeEnv('sonar') {
+                    // Run SonarQube analysis with dynamic project keys for each branch
                     sh """
                         $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectKey=tp-foyer-project \
-                        -Dsonar.projectName=tp-foyer \
+                        -Dsonar.projectKey=tp-foyer-project-${env.BRANCH_NAME} \
+                        -Dsonar.projectName=tp-foyer-${env.BRANCH_NAME} \
                         -Dsonar.sources=src \
-                        -Dsonar.java.binaries=target/classes \
-                        -Dsonar.branch.name=louay
+                        -Dsonar.java.binaries=target/classes
                     """
                 }
             }
