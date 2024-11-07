@@ -29,11 +29,11 @@
             <artifactId>spring-boot-starter-web</artifactId>
             <version>3.3.5</version> <!-- Updated version to address vulnerabilities -->
         </dependency>
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>8.0.33</version>
-        </dependency>
+      <dependency>
+        <groupId>com.mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
+        <version>8.2.0</version> <!-- Updated to fix vulnerability -->
+    </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
