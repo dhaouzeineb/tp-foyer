@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        NEXUS_URL = 'http://192.168.33.10:8081/repository/nexus/'
+        NEXUS_URL = 'http://192.168.33.10:8081/repository/nexus'
         NEXUS_REPO = 'nexus'
         CREDENTIALS_ID = 'nexus-credentials' // Remplacez par votre ID de credentials
     }
@@ -17,7 +17,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh 'mvn clean package'
+                    sh 'mvn clean package -DskipTests'
                 }
             }
         }
@@ -25,7 +25,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    sh 'mvn deploy'
+                    sh 'mvn test'
                 }
             }
         }
@@ -34,15 +34,22 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: "${CREDENTIALS_ID}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
-                        def jarFilePath = "/home/vagrant/tp-foyer/target/tp-foyer-5.0.0.jar"
+                        def jarFilePath = "target/tp-foyer-5.0.0.jar"
 
                         // Vérification de l'existence du fichier JAR
-                        sh "ls -l ${jarFilePath}"
+                        sh """
+                        if [ -f ${jarFilePath} ]; then
+                            echo 'Le fichier JAR existe.'
+                        else
+                            echo 'Le fichier JAR n\'existe pas !'
+                            exit 1
+                        fi
+                        """
 
-                        // Commande de déploiement
+                        // Commande de déploiement vers Nexus
                         sh """
                         mvn deploy:deploy-file \
-                            -Durl=${NEXUS_URL}/repository/${NEXUS_REPO} \
+                            -Durl=${NEXUS_URL} \
                             -DrepositoryId=${NEXUS_REPO} \
                             -Dfile=${jarFilePath} \
                             -DgroupId=tn.esprit \
@@ -68,6 +75,7 @@ pipeline {
         }
     }
 }
+
 
 
 
