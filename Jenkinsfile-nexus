@@ -34,17 +34,17 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: "${CREDENTIALS_ID}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
-                        def jarFilePath = "target/tp-foyer-5.0.0.jar"
+                        def jarFilePath = 'target/tp-foyer-5.0.0.jar'
 
                         // Vérification de l'existence du fichier JAR
-                        sh """
+                        sh '''
                         if [ -f ${jarFilePath} ]; then
-                            echo 'Le fichier JAR existe.'
+                            echo "Le fichier JAR existe."
                         else
-                            echo 'Le fichier JAR n\'existe pas !'
+                            echo "Le fichier JAR n'existe pas !"
                             exit 1
                         fi
-                        """
+                        '''
 
                         // Commande de déploiement vers Nexus
                         sh """
@@ -75,6 +75,7 @@ pipeline {
         }
     }
 }
+
 
 
 
