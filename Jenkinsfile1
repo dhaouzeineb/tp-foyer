@@ -1,0 +1,72 @@
+pipeline {
+    agent any
+
+    environment {
+        MAVEN_HOME = '/usr/share/maven'
+        SONAR_HOST_URL = 'http://192.168.33.10:9000'
+        SONAR_PROJECT_KEY = 'foyer'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'hassen', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    sh "${MAVEN_HOME}/bin/mvn clean install"
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    sh "${MAVEN_HOME}/bin/mvn test"
+                }
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                }
+                success {
+                    echo 'All unit tests passed!'
+                }
+                failure {
+                    echo 'Some unit tests failed.'
+                }
+            }
+        }
+
+        stage('Run SonarQube Analysis') {
+            steps {
+                withCredentials([string(credentialsId: 'SonarQubeToken', variable: 'SONAR_TOKEN')]) {
+                    script {
+                        sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
+                    }
+                }
+            }
+        }
+
+        stage('Publish Code Coverage') {
+            steps {
+                script {
+                    sh "${MAVEN_HOME}/bin/mvn jacoco:report"
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: 'target/site/jacoco/*.html', allowEmptyArchive: true
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Pipeline completed.'
+        }
+    }
+}

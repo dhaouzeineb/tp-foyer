@@ -32,6 +32,12 @@
             <artifactId>mysql-connector-j</artifactId>
         </dependency>
 
+	<dependency>
+		<groupId>org.jacoco</groupId>
+		<artifactId>org.jacoco.agent</artifactId>
+		<version>0.8.7</version>
+		<scope>test</scope>
+	</dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -57,18 +63,50 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
+		<plugin>
+			<groupId>org.jacoco</groupId>
+			<artifactId>jacoco-maven-plugin</artifactId>
+			<version>0.8.7</version>
+			<executions>
+				<execution>
+					<goals>
+						<goal>prepare-agent</goal>
+					</goals>
+				</execution>
+				<execution>
+					<id>report</id>
+					<phase>prepare-package</phase>
+					<goals>
+						<goal>report</goal>
+					</goals>
+				</execution>
+				<execution>
+					<id>report-xml</id>
+					<goals>
+						<goal>report</goal>
+					</goals>
+					<configuration>
+						<outputDirectory>${project.build.directory}/site/jacoco</outputDirectory>
+						<formats>
+							<format>XML</format>
+						</formats>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
+
+        	<plugin>
+                	<groupId>org.springframework.boot</groupId>
+                	<artifactId>spring-boot-maven-plugin</artifactId>
+                	<configuration>
+                    		<excludes>
+                        		<exclude>
+                            			<groupId>org.projectlombok</groupId>
+                            			<artifactId>lombok</artifactId>
+                        		</exclude>
+                    		</excludes>
+                	</configuration>
+            	</plugin>
         </plugins>
     </build>
 

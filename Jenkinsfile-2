@@ -36,6 +36,12 @@ pipeline {
                 }
             }
         }
+stage('Dependency Check') {
+    steps {
+        sh '/opt/dependency-check/bin/dependency-check.sh --project "MyProject" --out dependency-check-report.html'
+    }
+}
+
     }
     post {
         always {
