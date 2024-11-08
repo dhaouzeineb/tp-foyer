@@ -36,6 +36,15 @@ pipeline {
                 }
             }
         }
+        stage('Nexus Deployment') {
+            steps {
+                script {
+                    // Deploy to Nexus
+                    sh 'mvn deploy'
+                }
+            }
+        }
+    }
     post {
         always {
             echo 'Pipeline completed, cleaning up...'
