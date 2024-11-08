@@ -36,12 +36,11 @@ pipeline {
                 }
             }
         }
-        stage('Nexus Deployment') {
+          stage('nexus') {
             steps {
-                script {
-                    // Deploy to Nexus
-                    sh 'mvn deploy'
-                }
+                echo 'Deploy to nexus';   
+                sh 'mvn deploy -DskipTests -DaltDeploymentRepository=deploymentRepo::default::http://192.168.33.10:8081/repository/maven-snapshots/' 
+
             }
         }
     }
