@@ -40,7 +40,7 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts artifacts: 'target/site/jacoco/*.html', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'target/', allowEmptyArchive: true
                 }
             }
         }
