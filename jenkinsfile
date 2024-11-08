@@ -22,8 +22,6 @@ pipeline {
                 sh 'mvn compile'
             }
         }
-
-           
         stage('SonarQube Analysis') {
             steps {
                 // Configure SonarQube analysis
@@ -38,16 +36,15 @@ pipeline {
                 }
             }
         }
-
-    }
-
-                stage('nexus dep ') {
+        stage('Nexus Deployment') {
             steps {
                 script {
-                    sh 'mvn deploy '
+                    // Deploy to Nexus
+                    sh 'mvn deploy'
                 }
             }
         }
+    }
     post {
         always {
             echo 'Pipeline completed, cleaning up...'
