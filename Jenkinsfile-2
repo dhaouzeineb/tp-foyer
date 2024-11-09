@@ -34,19 +34,11 @@ pipeline {
             }
         }
 
-        stage('Dependency Check') {
+        stage('dependency check') {
                     steps {
-                        // Run dependency check with limited scope and persistent cache
-                        sh """
-                            /opt/dependency-check/dependency-check/bin/dependency-check.sh \
-                            --project "MyProject" \
-                            --out dependency-check-report.html \
-                            --data ${DEPENDENCY_CHECK_DATA} \
-                            -s /home/vagrant/tp-foyer \
-                            --exclude **/unnecessary-directory,**/other-exclude-path
-                        """
+                        dependencyCheck additionalArguments: '--format HTML', nvdCredentialsId: 'NVD', odcInstallation: 'DP-Check'
                     }
-        }
+                }
     }
     post {
         always {
