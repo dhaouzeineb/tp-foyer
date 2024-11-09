@@ -3,34 +3,18 @@
 
 repos:
   # Official pre-commit hooks repository
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.4.0  # Use the specific version of pre-commit-hooks
+repos:
+  - repo: file:///path/to/pre-commit/pre-commit-hooks  # Use the absolute path to your local clone
+    rev: main  # Or any specific branch or commit you want to use
     hooks:
-      # Trailing whitespace
       - id: trailing-whitespace
-        args: []
-
-      # Check for correct line endings (LF)
       - id: end-of-file-fixer
-        args: []
-
-      # Detect YAML syntax errors
       - id: yamllint
-        args: ['--strict']
-
-      # Check for file types (ensure files have proper extensions)
       - id: check-added-large-files
-        args: []
-
-      # Detect potential errors in shell scripts
       - id: shellcheck
-        args: ['--severity', 'warning']
-
-      # Check for secret keys in the code
       - id: detect-secrets
-        args: []
+      - id: flake8
 
-      # Check for Python code style violations (flake8)
       - id: flake8
         args: ['--max-line-length=100']
 
