@@ -2,24 +2,24 @@ pipeline {
     agent any
 
     environment {
-        MAVEN_HOME = '/usr/share/maven'  // Path to Maven
-        SONAR_HOST_URL = 'http://192.168.33.10:9000'  // SonarQube server URL
-        SONAR_PROJECT_KEY = 'foyer'  // SonarQube project key
-        DOCKER_HUB_REPO = 'wissal005/foyer_backend'  // Docker Hub repository
-        DOCKER_CREDENTIALS_ID = 'dockerHubCredentials'  // Docker Hub credentials ID in Jenkins
+        MAVEN_HOME = '/usr/share/maven'
+        SONAR_HOST_URL = 'http://192.168.33.10:9000'
+        SONAR_PROJECT_KEY = 'foyer'
+        DOCKER_HUB_REPO = 'wissal005/foyer_backend'
+        DOCKER_CREDENTIALS_ID = 'dockerHubCredentials'  // Replace with your Jenkins Docker credentials ID
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'wissal', url: 'https://github.com/dhaouzeineb/tp-foyer.git'  // Check out the project from GitHub
+                git branch: 'wissal', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
             }
         }
 
         stage('Build') {
             steps {
                 script {
-                    sh "${MAVEN_HOME}/bin/mvn clean install"  // Build the project with Maven
+                    sh "${MAVEN_HOME}/bin/mvn clean install"
                 }
             }
         }
@@ -28,7 +28,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'SonarQubeToken', variable: 'SONAR_TOKEN')]) {
                     script {
-                        sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"  // Run SonarQube analysis
+                        sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
                     }
                 }
             }
@@ -37,12 +37,12 @@ pipeline {
         stage('Publish Code Coverage') {
             steps {
                 script {
-                    sh "${MAVEN_HOME}/bin/mvn jacoco:report"  // Generate code coverage report with JaCoCo
+                    sh "${MAVEN_HOME}/bin/mvn jacoco:report"
                 }
             }
             post {
                 success {
-                    archiveArtifacts artifacts: 'target/', allowEmptyArchive: true  // Archive build artifacts
+                    archiveArtifacts artifacts: 'target/', allowEmptyArchive: true
                 }
             }
         }
@@ -50,7 +50,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${DOCKER_HUB_REPO}:latest ."  // Build Docker image
+                    sh "sudo docker build -t ${DOCKER_HUB_REPO}:latest ."
                 }
             }
         }
@@ -59,8 +59,8 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     script {
-                        sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'  // Log in to Docker Hub
-                        sh "docker push ${DOCKER_HUB_REPO}:latest"  // Push Docker image to Docker Hub
+                        sh 'echo $DOCKER_PASSWORD | sudo -S docker login -u $DOCKER_USERNAME --password-stdin'
+                        sh "sudo docker push ${DOCKER_HUB_REPO}:latest"
                     }
                 }
             }
@@ -69,17 +69,16 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Commands to deploy the application (e.g., using docker-compose)
-                    sh 'docker-compose down'  // Stop any running containers
-                    sh 'docker-compose up -d'  // Start new containers in detached mode
+                    // Commands for deployment, assuming docker-compose.yml file is set up for deployment
+                    sh 'sudo docker-compose down'
+                    sh 'sudo docker-compose up -d'
                 }
             }
         }
     }
-
     post {
         always {
-            echo 'Pipeline completed.'  // Message indicating the pipeline has finished
+            echo 'Pipeline completed.'
         }
     }
 }
