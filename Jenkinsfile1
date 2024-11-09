@@ -7,6 +7,7 @@ pipeline {
         SONAR_PROJECT_KEY = 'foyer'
         DOCKER_HUB_REPO = 'wissal005/foyer_backend'
         DOCKER_CREDENTIALS_ID = 'dockerHubCredentials'  // Replace with your Jenkins Docker credentials ID
+        SUDO_PASSWORD = '223JFT0236**'  // Store sudo password as an environment variable (not recommended for production)
     }
 
     stages {
@@ -50,7 +51,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "sudo docker build -t ${DOCKER_HUB_REPO}:latest ."
+                    sh "echo $SUDO_PASSWORD | sudo -S docker build -t ${DOCKER_HUB_REPO}:latest ."
                 }
             }
         }
@@ -59,8 +60,8 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     script {
-                        sh 'echo $DOCKER_PASSWORD | sudo -S docker login -u $DOCKER_USERNAME --password-stdin'
-                        sh "sudo docker push ${DOCKER_HUB_REPO}:latest"
+                        sh 'echo $SUDO_PASSWORD | sudo -S docker login -u $DOCKER_USERNAME --password-stdin'
+                        sh "echo $SUDO_PASSWORD | sudo -S docker push ${DOCKER_HUB_REPO}:latest"
                     }
                 }
             }
@@ -70,8 +71,8 @@ pipeline {
             steps {
                 script {
                     // Commands for deployment, assuming docker-compose.yml file is set up for deployment
-                    sh 'sudo docker-compose down'
-                    sh 'sudo docker-compose up -d'
+                    sh "echo $SUDO_PASSWORD | sudo -S docker-compose down"
+                    sh "echo $SUDO_PASSWORD | sudo -S docker-compose up -d"
                 }
             }
         }
