@@ -51,7 +51,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'SUDO_PASSWORD_CREDENTIAL', variable: 'SUDO_PASSWORD')]) {
                     script {
-                        // Use sudo with the password securely
+                        // Use sudo with password securely for docker build
                         sh "echo $SUDO_PASSWORD | sudo -S docker build -t ${DOCKER_HUB_REPO}:latest ."
                     }
                 }
@@ -63,7 +63,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     withCredentials([string(credentialsId: 'SUDO_PASSWORD_CREDENTIAL', variable: 'SUDO_PASSWORD')]) {
                         script {
-                            // Log in to Docker Hub with credentials and push the image
+                            // Log in to Docker Hub using credentials and push the image
                             sh "echo $SUDO_PASSWORD | sudo -S docker login -u $DOCKER_USERNAME --password-stdin"
                             sh "echo $SUDO_PASSWORD | sudo -S docker push ${DOCKER_HUB_REPO}:latest"
                         }
@@ -76,7 +76,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'SUDO_PASSWORD_CREDENTIAL', variable: 'SUDO_PASSWORD')]) {
                     script {
-                        // Commands for deployment using docker-compose
+                        // Deploy using docker-compose
                         sh "echo $SUDO_PASSWORD | sudo -S docker-compose down"
                         sh "echo $SUDO_PASSWORD | sudo -S docker-compose up -d"
                     }
