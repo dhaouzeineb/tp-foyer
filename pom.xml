@@ -17,9 +17,8 @@
     <description>tp-foyer</description>
 
     <properties>
+        <sonar-maven-plugin.version>3.9.0.2155</sonar-maven-plugin.version>
         <java.version>17</java.version>
-        <!-- SonarQube configuration -->
-        <sonar.jacoco.reportPaths>target/site/jacoco/jacoco.xml</sonar.jacoco.reportPaths>
     </properties>
 
     <dependencies>
@@ -95,7 +94,11 @@
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.9.0.2155</version>
+                <version>${sonar-maven-plugin.version}</version>
+                <configuration>
+                    <!-- Spécification du chemin du rapport JaCoCo -->
+                    <sonar.jacoco.reportPaths>target/jacoco.xml</sonar.jacoco.reportPaths>
+                </configuration>
             </plugin>
         </plugins>
     </build>
