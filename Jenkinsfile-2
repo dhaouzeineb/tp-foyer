@@ -43,6 +43,7 @@ pipeline {
                             --out dependency-check-report.html \
                             --data ${DEPENDENCY_CHECK_DATA} \
                             --exclude **/unnecessary-directory,**/other-exclude-path
+                            -s ~/tp-foyer
                         """
                     }
         }
