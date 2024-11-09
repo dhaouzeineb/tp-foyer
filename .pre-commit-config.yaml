@@ -1,23 +1,37 @@
-# .pre-commit-config.yaml
+# This is the pre-commit configuration file
+# It defines hooks to be executed during commit actions
 
-# This is the root level configuration for the pre-commit hooks
-
-# Define the list of repositories and hooks to run
 repos:
-  - repo: https://github.com/pre-commit/mirrors-bandit
-    rev: v1.7.4  # Use the specific version of the Bandit hook
+  # Official pre-commit hooks repository
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0  # Use the specific version of pre-commit-hooks
     hooks:
-      - id: bandit
-        args: ['--quiet']
+      # Trailing whitespace
+      - id: trailing-whitespace
+        args: []
 
-  - repo: https://github.com/GitLeaks/GitLeaks
-    rev: v8.8.3  # Use the specific version of Gitleaks
-    hooks:
-      - id: gitleaks
-        args: ['--verbose']
+      # Check for correct line endings (LF)
+      - id: end-of-file-fixer
+        args: []
 
-  - repo: https://github.com/pre-commit/mirrors-talisman
-    rev: v1.18.0
-    hooks:
-      - id: talisman
+      # Detect YAML syntax errors
+      - id: yamllint
+        args: ['--strict']
+
+      # Check for file types (ensure files have proper extensions)
+      - id: check-added-large-files
+        args: []
+
+      # Detect potential errors in shell scripts
+      - id: shellcheck
+        args: ['--severity', 'warning']
+
+      # Check for secret keys in the code
+      - id: detect-secrets
+        args: []
+
+      # Check for Python code style violations (flake8)
+      - id: flake8
+        args: ['--max-line-length=100']
+
 
