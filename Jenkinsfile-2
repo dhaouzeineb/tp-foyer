@@ -1,57 +1,53 @@
 pipeline {
     agent any
+
     environment {
-        SCANNER_HOME = tool 'SonarQube'  // Declare the SonarQube Scanner tool
+        MAVEN_HOME = '/usr/share/maven'
+        SONAR_HOST_URL = 'http://192.168.33.10:9000'
+        SONAR_PROJECT_KEY = 'foyer'
     }
+
     stages {
         stage('Checkout') {
             steps {
-                // Get code from the Git repository and specify the branch
-                git branch: 'hassen', credentialsId: 'GitHub-Credentials', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
+                git branch: 'hassen', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
             }
         }
+
         stage('Build') {
             steps {
-                // Command to clean the project
-                sh 'mvn clean'
-            }
-        }
-        stage('Compile') {
-            steps {
-                // Command to compile the project
-                sh 'mvn compile'
-            }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                // Configure SonarQube analysis
-                withSonarQubeEnv('SonarQubeToken') {
-                    sh """
-                        $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectKey=tp-foyer-project \
-                        -Dsonar.projectName=tp-foyer \
-                        -Dsonar.sources=src \
-                        -Dsonar.java.binaries=target/classes
-                    """
+                script {
+                    sh "${MAVEN_HOME}/bin/mvn clean install"
                 }
             }
         }
-stage('Dependency Check') {
-    steps {
-        sh '/opt/dependency-check/bin/dependency-check.sh --project "MyProject" --out dependency-check-report.html'
-    }
-}
 
+        stage('Run SonarQube Analysis') {
+            steps {
+                withCredentials([string(credentialsId: 'SonarQubeToken', variable: 'SONAR_TOKEN')]) {
+                    script {
+                        sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
+                    }
+                }
+            }
+        }
+
+        stage('Dependency Check') {
+                    steps {
+                        // Run dependency check with limited scope and persistent cache
+                        sh """
+                            /opt/dependency-check/bin/dependency-check.sh \
+                            --project "MyProject" \
+                            --out dependency-check-report.html \
+                            --data ${DEPENDENCY_CHECK_DATA} \
+                            --exclude **/unnecessary-directory,**/other-exclude-path
+                        """
+                    }
+        }
     }
     post {
         always {
-            echo 'Pipeline completed, cleaning up...'
-        }
-        success {
-            echo 'Pipeline executed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed.'
+            echo 'Pipeline completed.'
         }
     }
 }
