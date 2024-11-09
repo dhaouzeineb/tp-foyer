@@ -1,63 +1,45 @@
-# .pre-commit-config.yaml
-
-# Configuration for pre-commit hooks
-config:
-  # Repository: pre-commit-hooks
-  - repo: https://github.com/pre-commit/pre-commit-hooks
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-        exclude: 'src/main/java/.*\.java|.*\.properties|.*\.yaml'  # Exclude .java, .properties, and .yaml files
-      - id: check-yaml
-      - id: debug-statements
-      - id: double-quote-string-fixer
-      - id: name-tests-test
-      - id: requirements-txt-fixer
-
-  # Repository: setup-cfg-fmt
-  - repo: https://github.com/asottile/setup-cfg-fmt
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+        exclude: 'src/main/java/.*\.java|.*\.properties|.*\.yaml' 
+    -   id: check-yaml
+    -   id: debug-statements
+    -   id: double-quote-string-fixer
+    -   id: name-tests-test
+    -   id: requirements-txt-fixer
+-   repo: https://github.com/asottile/setup-cfg-fmt
     rev: v2.7.0
     hooks:
-      - id: setup-cfg-fmt
-
-  # Repository: reorder-python-imports
-  - repo: https://github.com/asottile/reorder-python-imports
+    -   id: setup-cfg-fmt
+-   repo: https://github.com/asottile/reorder-python-imports
     rev: v3.14.0
     hooks:
-      - id: reorder-python-imports
+    -   id: reorder-python-imports
         args: [--py39-plus, --add-import, 'from __future__ import annotations']
-
-  # Repository: add-trailing-comma
-  - repo: https://github.com/asottile/add-trailing-comma
+-   repo: https://github.com/asottile/add-trailing-comma
     rev: v3.1.0
     hooks:
-      - id: add-trailing-comma
-
-  # Repository: pyupgrade
-  - repo: https://github.com/asottile/pyupgrade
+    -   id: add-trailing-comma
+-   repo: https://github.com/asottile/pyupgrade
     rev: v3.19.0
     hooks:
-      - id: pyupgrade
+    -   id: pyupgrade
         args: [--py39-plus]
-
-  # Repository: autopep8
-  - repo: https://github.com/hhatto/autopep8
+-   repo: https://github.com/hhatto/autopep8
     rev: v2.3.1
     hooks:
-      - id: autopep8
-
-  # Repository: flake8
-  - repo: https://github.com/PyCQA/flake8
+    -   id: autopep8
+-   repo: https://github.com/PyCQA/flake8
     rev: 7.1.1
     hooks:
-      - id: flake8
-
-  # Repository: mirrors-mypy
-  - repo: https://github.com/pre-commit/mirrors-mypy
+    -   id: flake8
+-   repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.13.0
     hooks:
-      - id: mypy
+    -   id: mypy
 
 
 
