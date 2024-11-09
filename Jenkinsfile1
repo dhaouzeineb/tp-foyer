@@ -7,7 +7,6 @@ pipeline {
         SONAR_PROJECT_KEY = 'foyer'
         DOCKER_HUB_REPO = 'wissal005/foyer_backend'
         DOCKER_CREDENTIALS_ID = 'dockerHubCredentials'  // Replace with your Jenkins Docker credentials ID
-        SUDO_PASSWORD = '223JFT0236**'  // Store sudo password as an environment variable (not recommended for production)
     }
 
     stages {
@@ -50,8 +49,11 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh "echo $SUDO_PASSWORD | sudo -S docker build -t ${DOCKER_HUB_REPO}:latest ."
+                withCredentials([string(credentialsId: 'SUDO_PASSWORD_CREDENTIAL', variable: 'SUDO_PASSWORD')]) {
+                    script {
+                        // Use sudo with the password securely
+                        sh "echo $SUDO_PASSWORD | sudo -S docker build -t ${DOCKER_HUB_REPO}:latest ."
+                    }
                 }
             }
         }
@@ -59,9 +61,12 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    script {
-                        sh 'echo $SUDO_PASSWORD | sudo -S docker login -u $DOCKER_USERNAME --password-stdin'
-                        sh "echo $SUDO_PASSWORD | sudo -S docker push ${DOCKER_HUB_REPO}:latest"
+                    withCredentials([string(credentialsId: 'SUDO_PASSWORD_CREDENTIAL', variable: 'SUDO_PASSWORD')]) {
+                        script {
+                            // Log in to Docker Hub with credentials and push the image
+                            sh "echo $SUDO_PASSWORD | sudo -S docker login -u $DOCKER_USERNAME --password-stdin"
+                            sh "echo $SUDO_PASSWORD | sudo -S docker push ${DOCKER_HUB_REPO}:latest"
+                        }
                     }
                 }
             }
@@ -69,10 +74,12 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                script {
-                    // Commands for deployment, assuming docker-compose.yml file is set up for deployment
-                    sh "echo $SUDO_PASSWORD | sudo -S docker-compose down"
-                    sh "echo $SUDO_PASSWORD | sudo -S docker-compose up -d"
+                withCredentials([string(credentialsId: 'SUDO_PASSWORD_CREDENTIAL', variable: 'SUDO_PASSWORD')]) {
+                    script {
+                        // Commands for deployment using docker-compose
+                        sh "echo $SUDO_PASSWORD | sudo -S docker-compose down"
+                        sh "echo $SUDO_PASSWORD | sudo -S docker-compose up -d"
+                    }
                 }
             }
         }
