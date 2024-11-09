@@ -1,0 +1,19 @@
+# .pre-commit-config.yaml
+
+-   repo: https://github.com/pre-commit/mirrors-bandit
+    rev: v1.7.4  # Use the specific version of the Bandit hook
+    hooks:
+    -   id: bandit
+        args: ['--quiet']
+
+-   repo: https://github.com/GitLeaks/GitLeaks
+    rev: v8.8.3  # Use the specific version of Gitleaks
+    hooks:
+    -   id: gitleaks
+        args: ['--verbose']
+
+# Add other hooks as necessary
+-   repo: https://github.com/pre-commit/mirrors-talisman
+    rev: v1.18.0
+    hooks:
+    -   id: talisman
