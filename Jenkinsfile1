@@ -6,7 +6,6 @@ pipeline {
         SONAR_HOST_URL = 'http://192.168.33.10:9000'
         SONAR_PROJECT_KEY = 'foyer'
         DOCKER_HUB_REPO = 'wissal005/foyer_backend'
-        DOCKER_CREDENTIALS_ID = 'dockerHubCredentials'  // Replace with your Jenkins Docker credentials ID
     }
 
     stages {
@@ -49,24 +48,20 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                withCredentials([string(credentialsId: 'SUDO_PASSWORD_CREDENTIAL', variable: 'SUDO_PASSWORD')]) {
-                    script {
-                        // Use sudo with password securely for docker build
-                        sh "echo $SUDO_PASSWORD | sudo -S docker build -t ${DOCKER_HUB_REPO}:latest ."
-                    }
+                script {
+                    sh 'docker build -t ${DOCKER_HUB_REPO}:latest .'
                 }
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    withCredentials([string(credentialsId: 'SUDO_PASSWORD_CREDENTIAL', variable: 'SUDO_PASSWORD')]) {
-                        script {
-                            // Log in to Docker Hub using credentials and push the image
-                            sh "echo $SUDO_PASSWORD | sudo -S docker login -u $DOCKER_USERNAME --password-stdin"
-                            sh "echo $SUDO_PASSWORD | sudo -S docker push ${DOCKER_HUB_REPO}:latest"
-                        }
+                withCredentials([string(credentialsId: 'dockerHubToken', variable: 'DOCKER_HUB_TOKEN')]) {
+                    script {
+                        // Login using the Docker Hub token
+                        sh "echo $DOCKER_HUB_TOKEN | docker login -u wissal005 --password-stdin"
+                        // Push Docker image to Docker Hub
+                        sh "docker push ${DOCKER_HUB_REPO}:latest"
                     }
                 }
             }
@@ -74,16 +69,16 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                withCredentials([string(credentialsId: 'SUDO_PASSWORD_CREDENTIAL', variable: 'SUDO_PASSWORD')]) {
-                    script {
-                        // Deploy using docker-compose
-                        sh "echo $SUDO_PASSWORD | sudo -S docker-compose down"
-                        sh "echo $SUDO_PASSWORD | sudo -S docker-compose up -d"
-                    }
+                script {
+                    // Commands for deployment, such as running docker-compose
+                    // Assuming you have a docker-compose.yml file configured for deployment
+                    sh 'docker-compose down'
+                    sh 'docker-compose up -d'
                 }
             }
         }
     }
+
     post {
         always {
             echo 'Pipeline completed.'
