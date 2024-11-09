@@ -18,7 +18,10 @@
 
     <properties>
         <java.version>17</java.version>
+        <!-- SonarQube configuration -->
+        <sonar.jacoco.reportPaths>target/site/jacoco/jacoco.xml</sonar.jacoco.reportPaths>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -52,6 +55,7 @@
 
     <build>
         <plugins>
+            <!-- Plugin Spring Boot Maven -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -65,12 +69,14 @@
                 </configuration>
             </plugin>
 
+            <!-- Plugin Maven Deploy -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>3.1.3</version>
             </plugin>
 
+            <!-- Plugin JaCoCo pour la couverture de tests -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -84,6 +90,13 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Plugin SonarQube pour l'analyse -->
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.9.0.2155</version>
+            </plugin>
         </plugins>
     </build>
 
@@ -94,4 +107,5 @@
             <url>http://192.168.33.10:8081/repository/nexus-jenkins/</url>
         </repository>
     </distributionManagement>
+
 </project>
