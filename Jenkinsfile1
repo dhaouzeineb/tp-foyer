@@ -72,8 +72,8 @@ pipeline {
                 script {
                     // Commands for deployment, such as running docker-compose
                     // Assuming you have a docker-compose.yml file configured for deployment
-                    sh 'docker-compose down'
-                    sh 'docker-compose up -d'
+                    sh 'docker compose down'
+                    sh 'docker compose up -d'
                 }
             }
         }
