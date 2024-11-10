@@ -26,11 +26,11 @@ pipeline {
             }
         }
         
-        /* Uncomment to run SonarQube code analysis
+        // Uncomment to run SonarQube code analysis if required
         stage('SonarQube Analysis') {
             steps {
-                // Run SonarQube analysis on the code, setting project properties dynamically
                 withSonarQubeEnv('sonar') {
+                    // Run SonarQube analysis on the code, setting project properties dynamically
                     sh '''
                         mvn clean verify sonar:sonar \
                           -Dsonar.projectKey=devops \
@@ -41,9 +41,8 @@ pipeline {
                 }
             }
         }
-        */
 
-        /* Uncomment to upload artifact to Nexus
+        // Uncomment to upload artifact to Nexus if required
         stage("NEXUS") {
             steps {
                 script {
@@ -64,32 +63,32 @@ pipeline {
                 }
             }
         }
-        */
-/*
+
+        // Build Docker Image (Uncomment if Docker image build is required)
         stage('Build Docker Image') {
             steps {
                 // Build the Docker image from the Dockerfile in the project root
                 sh 'docker build -t xhalakox/foyer_backend:latest .'
             }
         }
-        */
-        /*
+
+        // Docker Login (Uncomment if Docker login is needed)
         stage('Docker Login') {
             steps {
                 // Log in to DockerHub using credentials from environment variables
                 sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
         }
-        */
-        /*
+
+        // Push Docker Image to DockerHub (Uncomment if pushing Docker image is needed)
         stage('Push Docker Image to DockerHub') {
             steps {
                 // Push the Docker image to DockerHub repository
                 sh 'docker push xhalakox/foyer_backend:latest'
             }
         }
-        */
-        /*
+
+        // Deploy with Docker Compose (Uncomment if Docker Compose deployment is needed)
         stage('Deploy with Docker Compose') {
             steps {
                 // Deploy the application using Docker Compose, detached mode
@@ -97,7 +96,7 @@ pipeline {
             }
         }
     }
-*/
+    
     post {
         always {
             // Run cleanup steps after the pipeline finishes
