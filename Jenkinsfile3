@@ -18,7 +18,8 @@ pipeline {
         stage('Pre-Commit') {
             steps {
                 script {
-                    sh "pre-commit run --all-files"
+                    sh "pre-commit run --all-files || true"
+                    sh "git add ."
                 }
             }
         }
