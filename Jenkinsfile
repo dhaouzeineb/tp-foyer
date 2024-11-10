@@ -1,8 +1,9 @@
 pipeline {
     agent any
     environment {
-        SCANNER_HOME = tool 'SonarQube'  // Declare the SonarQube Scanner tool
-DOCKERHUB_CREDENTIALS = credentials('dockerhub')    }
+        SCANNER_HOME = tool 'SonarQube'  // SonarQube Scanner tool
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -12,13 +13,13 @@ DOCKERHUB_CREDENTIALS = credentials('dockerhub')    }
         }
         stage('Build') {
             steps {
-                // Command to clean the project
+                // Clean the project
                 sh 'mvn clean'
             }
         }
         stage('Compile') {
             steps {
-                // Command to compile the project
+                // Compile the project
                 sh 'mvn compile'
             }
         }
@@ -26,34 +27,37 @@ DOCKERHUB_CREDENTIALS = credentials('dockerhub')    }
             steps {
                 withSonarQubeEnv('sonar') {
                     // Run SonarQube analysis with dynamic project keys for each branch
-                    sh """
-                        $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectKey=tp-foyer-project-${env.BRANCH_NAME} \
-                        -Dsonar.projectName=tp-foyer-${env.BRANCH_NAME} \
-                        -Dsonar.sources=src \
-                        -Dsonar.java.binaries=target/classes
-                    """
+                    sh '''
+                        mvn clean verify sonar:sonar \
+                          -Dsonar.projectKey=devops \
+                          -Dsonar.projectName="devops" \
+                          -Dsonar.host.url=http://192.168.33.10:9000 \
+                          -Dsonar.token=sqp_2d407004e36c7bfcb71d2f9f8379ca80bdcbd9df
+                    '''
                 }
             }
         }
-        stage("DOCKER IMAGE") {
+        stage('Build Docker Image') {
             steps {
-                sh "docker build -t xhalakox/foyer_backend:latest  ."
+                sh 'docker build -t xhalakox/foyer_backend:latest .'
             }
         }
-          /*stage("DOCKER LOGIN") {
+        /* 
+        stage('Docker Login') {
             steps {
-                sh "echo \$DOCKERHUB_CREDENTIALS_PSW | docker login -u \$DOCKERHUB_CREDENTIALS_USR --password-stdin"
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
-        }*/
-        /* stage("DOCKER HUB PUSH") {
+        }
+        
+        stage('Push Docker Image to DockerHub') {
             steps {
-                sh "docker push xhalakox/foyer_backend:latest "
+                sh 'docker push xhalakox/foyer_backend:latest'
             }
-        }*/
-         stage("DOCKER-COMPOSE") {
+        }
+        */
+        stage('Deploy with Docker Compose') {
             steps {
-                sh "docker-compose up -d"
+                sh 'docker-compose up -d'
             }
         }
     }
