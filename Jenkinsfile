@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         SCANNER_HOME = tool 'SonarQube'  // Declare the SonarQube Scanner tool
-    }
+DOCKERHUB_CREDENTIALS = credentials('dockerhub')    }
     stages {
         stage('Checkout') {
             steps {
@@ -34,6 +34,26 @@ pipeline {
                         -Dsonar.java.binaries=target/classes
                     """
                 }
+            }
+        }
+        stage("DOCKER IMAGE") {
+            steps {
+                sh "docker build -t xhalakox/foyer_backend:latest  ."
+            }
+        }
+          /*stage("DOCKER LOGIN") {
+            steps {
+                sh "echo \$DOCKERHUB_CREDENTIALS_PSW | docker login -u \$DOCKERHUB_CREDENTIALS_USR --password-stdin"
+            }
+        }*/
+        /* stage("DOCKER HUB PUSH") {
+            steps {
+                sh "docker push xhalakox/foyer_backend:latest "
+            }
+        }*/
+         stage("DOCKER-COMPOSE") {
+            steps {
+                sh "docker-compose up -d"
             }
         }
     }
