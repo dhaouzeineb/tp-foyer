@@ -11,6 +11,8 @@ services:
       - "8082:8080"
     depends_on:
       - database
+    restart: always
+    entrypoint: ["./wait-for-it.sh", "database:3306", "--", "java", "-jar", "target/your-app.jar"]  # Assurez-vous que wait-for-it.sh est dans votre répertoire
 
   database:
     image: mysql:8
@@ -23,7 +25,9 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+    restart: always
 
 volumes:
   db_data:
+
 
