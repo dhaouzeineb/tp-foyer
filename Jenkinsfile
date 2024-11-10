@@ -23,7 +23,8 @@ pipeline {
                 sh 'mvn compile'
             }
         }
-        stage('SonarQube Analysis') {
+        
+        /*stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonar') {
                     // Run SonarQube analysis with dynamic project keys for each branch
@@ -37,6 +38,7 @@ pipeline {
                 }
             }
         }
+        */
         /* stage("NEXUS") {
             steps {
                 script {
