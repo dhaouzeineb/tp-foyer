@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         MAVEN_HOME = '/usr/share/maven'
-        SONAR_HOST_URL = 'http://192.168.33.10:9000'
+        SONAR_HOST_URL = 'http://10.0.2.15:9000'
         SONAR_PROJECT_KEY = 'foyer'
         DOCKER_HUB_REPO = 'wissal005/foyer_backend'
     }
@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'wissal', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
+                git branch: 'wissal', credentialsId: 'GitHub-Credentials', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
             }
         }
 
