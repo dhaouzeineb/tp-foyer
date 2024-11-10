@@ -37,6 +37,25 @@ pipeline {
                 }
             }
         }
+        /* stage("NEXUS") {
+            steps {
+                script {
+                    nexusArtifactUploader artifacts: [[
+                        artifactId: 'tp-foyer',
+                        classifier: '',
+                        file: 'target/tp-foyer-5.0.0.jar',
+                        type: 'jar'
+                    ]],
+                    credentialsId: 'nexus',
+                    groupId: 'esprit.tn',
+                    nexusUrl: '192.168.33.10:8081',
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    repository: 'maven-hosted',
+                    version: "0.0.1-$BUILD_NUMBER"
+                }
+            }
+        }*/
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t xhalakox/foyer_backend:latest .'
