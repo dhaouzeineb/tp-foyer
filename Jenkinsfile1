@@ -25,7 +25,7 @@ pipeline {
 
         stage('Run SonarQube Analysis') {
             steps {
-                withCredentials([string(credentialsId: 'SonarQubeToken', variable: 'SONAR_TOKEN')]) {
+                withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')]) {
                     script {
                         sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
                     }
@@ -33,48 +33,12 @@ pipeline {
             }
         }
 
-        stage('Publish Code Coverage') {
+       
+              stage('nexus') {
             steps {
-                script {
-                    sh "${MAVEN_HOME}/bin/mvn jacoco:report"
-                }
-            }
-            post {
-                success {
-                    archiveArtifacts artifacts: 'target/', allowEmptyArchive: true
-                }
-            }
-        }
+                echo 'Deploy to nexus';   
+                sh 'mvn deploy -DskipTests -DaltDeploymentRepository=deploymentRepo::default::http://10.0.2.15:8081/repository/maven-snapshots/' 
 
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    sh 'docker build -t ${DOCKER_HUB_REPO}:latest .'
-                }
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                withCredentials([string(credentialsId: 'dockerHubToken', variable: 'DOCKER_HUB_TOKEN')]) {
-                    script {
-                        // Login using the Docker Hub token
-                        sh "echo $DOCKER_HUB_TOKEN | docker login -u wissal005 --password-stdin"
-                        // Push Docker image to Docker Hub
-                        sh "docker push ${DOCKER_HUB_REPO}:latest"
-                    }
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                script {
-                    // Commands for deployment, such as running docker-compose
-                    // Assuming you have a docker-compose.yml file configured for deployment
-                    sh 'docker compose down'
-                    sh 'docker compose up -d'
-                }
             }
         }
     }
