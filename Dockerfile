@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copier le fichier JAR généré par Maven dans l'image
-COPY target/*.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 
 # Exposer le port sur lequel l'application va écouter
 EXPOSE 8089
