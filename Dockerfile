@@ -1,14 +1,24 @@
-# Utiliser l'image officielle de OpenJDK comme image de base
-FROM openjdk:17-jdk-slim
-
-# Spécifier le répertoire de travail dans l'image
+# Stage 1: Build the application
+FROM maven:3.8.7-openjdk-17-slim AS build
 WORKDIR /app
 
-# Copier le fichier JAR généré par Maven dans l'image
+# Copy the pom.xml and download dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# Copy the source code and build the application
+COPY src ./src
+RUN mvn package -DskipTests
+
+# Stage 2: Create the final image
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+
+# Copy the JAR file from the build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Exposer le port sur lequel l'application va écouter
-EXPOSE 8089
+# Expose the application port
+EXPOSE 8080
 
-# Commande pour exécuter l'application Java
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Run the application
+CMD ["java", "-jar", "app.jar"]
