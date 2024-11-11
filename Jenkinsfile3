@@ -14,16 +14,6 @@ pipeline {
                 git branch: 'hassen', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
             }
         }
-
-        stage('Pre-Commit') {
-            steps {
-                script {
-                    sh "pre-commit run --all-files || true"
-                    sh "git add ."
-                }
-            }
-        }
-
         stage('Commit') {
             steps {
                 withCredentials([string(credentialsId: 'SonarQubeToken', variable: 'SONAR_TOKEN')]) {
