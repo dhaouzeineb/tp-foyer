@@ -5,12 +5,12 @@ services:
     image: mysql:5.7
     restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ROOT_PASSWORD=rootpassword  # Set a password for the root user
       - MYSQL_DATABASE=timesheet_db
     ports:
       - 3307:3306
     volumes:
-      - db:/var/lib/mysql
+      - db:/var/lib/mysql   # Ensure this volume is correctly defined
 
   app-timesheet:
     depends_on:
@@ -25,7 +25,7 @@ services:
           "datasource": {
             "url": "jdbc:mysql://mysqldb:3306/timesheet_db?createDatabaseIfNotExist=true",
             "username": "root",
-            "password": "",
+            "password": "rootpassword",  # Set password here
             "driver-class-name": "com.mysql.cj.jdbc.Driver"
           },
           "jpa": {
@@ -40,3 +40,6 @@ services:
       }'
     stdin_open: true
     tty: true
+
+volumes:
+  db:  # This is where you define the db volume
