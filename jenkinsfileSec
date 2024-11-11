@@ -8,7 +8,7 @@ pipeline {
 
         MAVEN_HOME = '/usr/share/maven'
 
-        SONAR_HOST_URL = 'http://192.168.33.10:9000'
+        SONAR_HOST_URL = 'http://10.0.2.15:9000'
 
         SONAR_PROJECT_KEY = 'foyer'
 
@@ -54,7 +54,7 @@ pipeline {
 
             steps {
 
-                withCredentials([string(credentialsId: 'SonarQubeToken', variable: 'SONAR_TOKEN')]) {
+                withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')]) {
 
                     script {
 
