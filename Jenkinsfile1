@@ -25,7 +25,7 @@ pipeline {
 
         stage('Run SonarQube Analysis') {
             steps {
-                withCredentials([string(credentialsId: 'SonarQubeToken', variable: 'SONAR_TOKEN')]) {
+                withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')]) {
                     script {
                         sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
                     }
