@@ -1,59 +1,47 @@
 pipeline {
-    agent any  // Run the pipeline on any available agent
+    agent any
     environment {
-        // Define the SonarQube scanner tool to be used for code analysis
-        SCANNER_HOME = tool 'SonarQube'  
-        // Define DockerHub credentials for image login and push stages (currently not used)
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub') 
+        SCANNER_HOME = tool 'SonarQube'
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
     }
     stages {
         stage('Checkout') {
             steps {
-                // Checkout code from the Git repository, specifying branch and credentials
                 git branch: 'louay', credentialsId: 'github', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
             }
         }
 
- 
         stage('Build') {
             steps {
-                // Clean the project to remove any previous builds
                 sh 'mvn clean'
             }
         }
 
         stage('Compile') {
             steps {
-                // Compile the project to prepare for packaging
                 sh 'mvn compile'
             }
         }
 
-
-        
         stage('Jacoco Report') {
             steps {
-                // Generate Jacoco report after tests have run
                 sh 'mvn jacoco:report'
             }
         }
 
         stage('Publish Coverage') {
             steps {
-                // Publish Jacoco coverage report in Jenkins
-                jacoco execPattern: '**/target/jacoco.exec', // Path to the Jacoco exec file
-                       classPattern: '**/target/classes', // Path to compiled classes
-                       sourcePattern: '**/src/main/java', // Path to source files
-                       inclusionPattern: '**/*.class',    // Include all classes
-                       exclusionPattern: '**/*Test*'      // Exclude test classes
+                jacoco execPattern: '**/target/jacoco.exec',
+                       classPattern: '**/target/classes',
+                       sourcePattern: '**/src/main/java',
+                       inclusionPattern: '*/.class',
+                       exclusionPattern: '*/*Test'
             }
         }
-        
-        // Uncomment to run SonarQube code analysis if required
+
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonar') {
-                    // Run SonarQube analysis on the code, setting project properties dynamically
                     sh '''
                         mvn clean verify sonar:sonar \
                           -Dsonar.projectKey=devops \
@@ -65,11 +53,9 @@ pipeline {
             }
         }
 
-        // Uncomment to upload artifact to Nexus if required
-        stage("NEXUS") {
+        stage('NEXUS') {
             steps {
                 script {
-                    // Upload generated JAR artifact to Nexus repository
                     nexusArtifactUploader artifacts: [[
                         artifactId: 'tp-foyer',
                         classifier: '',
@@ -87,51 +73,69 @@ pipeline {
             }
         }
 
-        // Docker stages are disabled for now
-        
         stage('Build Docker Image') {
             steps {
-                // Build the Docker image from the Dockerfile in the project root
                 sh 'docker build -t xhalakox/foyer_backend:latest .'
             }
         }
 
         stage('Docker Login') {
             steps {
-                // Log in to DockerHub using credentials from environment variables
                 sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
         }
 
         stage('Push Docker Image to DockerHub') {
             steps {
-                // Push the Docker image to DockerHub repository
                 sh 'docker push xhalakox/foyer_backend:latest'
             }
         }
 
         stage('Deploy with Docker Compose') {
             steps {
-                // Deploy the application using Docker Compose, detached mode
                 sh 'docker-compose up -d'
             }
         }
-        
 
-   
+        // New stages for monitoring with Prometheus and Grafana
+        stage('Start Prometheus') {
+            steps {
+                sh 'docker run -d --name prometheus -p 9090:9090 prom/prometheus'
+            }
+        }
+
+        stage('Start Grafana') {
+            steps {
+                sh 'docker run -d --name grafana -p 3000:3000 grafana/grafana'
+            }
+        }
+
+        stage('Configure Prometheus for Jenkins') {
+            steps {
+                script {
+                    sh """
+                    docker exec -it prometheus sh -c '
+                    echo "
+                    - job_name: jenkins
+                      metrics_path: /prometheus
+                      static_configs:
+                        - targets: [\\"192.168.1.244:8080\\"]" >> /etc/prometheus/prometheus.yml
+                    '
+                    docker restart prometheus
+                    """
+                }
+            }
+        }
     }
-    
+
     post {
         always {
-            // Run cleanup steps after the pipeline finishes
             echo 'Pipeline completed, cleaning up...'
         }
         success {
-            // Print a success message if the pipeline completes successfully
             echo 'Pipeline executed successfully!'
         }
         failure {
-            // Print a failure message if any stage fails
             echo 'Pipeline failed.'
         }
     }
