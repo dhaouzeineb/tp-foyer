@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         MAVEN_HOME = '/usr/share/maven'
-
     }
 
     stages {
@@ -23,16 +22,13 @@ pipeline {
 
         stage('Upload to Nexus') {
             steps {
-
                 script {
                     sh "${MAVEN_HOME}/bin/mvn deploy"
-
                 }
             }
-
         }
-
     }
+    
     post {
         always {
             echo 'Pipeline completed.'
