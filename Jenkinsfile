@@ -70,7 +70,7 @@ pipeline {
         }
 
         // Docker stages are disabled for now
-        /*
+        
         stage('Build Docker Image') {
             steps {
                 // Build the Docker image from the Dockerfile in the project root
@@ -98,27 +98,9 @@ pipeline {
                 sh 'docker-compose up -d'
             }
         }
-        */
+        
 
-        // New Trivy Scan stage
-        stage('Trivy Scan') {
-            steps {
-                script {
-                    // Run Trivy scan for vulnerabilities on the Docker image (if built)
-                    try {
-                        timeout(time: 10, unit: 'MINUTES') {
-                            sh '''
-                                export TRIVY_GITHUB_TOKEN=${TRIVY_GITHUB_TOKEN}
-                                trivy image --skip-db-update --severity HIGH,CRITICAL --format json --timeout 30m xhalakox/foyer_backend:latest
-                            '''
-                        }
-                    } catch (Exception e) {
-                        echo "Trivy scan failed: ${e.getMessage()}"
-                        currentBuild.result = 'FAILURE'
-                    }
-                }
-            }
-        }
+   
     }
     
     post {
