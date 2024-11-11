@@ -5,8 +5,6 @@ pipeline {
         SCANNER_HOME = tool 'SonarQube'  
         // Define DockerHub credentials for image login and push stages (currently not used)
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') 
-        // GitHub token for Trivy scan
-        TRIVY_GITHUB_TOKEN = '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'
     }
     stages {
         stage('Checkout') {
@@ -28,6 +26,26 @@ pipeline {
             steps {
                 // Compile the project to prepare for packaging
                 sh 'mvn compile'
+            }
+        }
+
+
+        
+        stage('Jacoco Report') {
+            steps {
+                // Generate Jacoco report after tests have run
+                sh 'mvn jacoco:report'
+            }
+        }
+
+        stage('Publish Coverage') {
+            steps {
+                // Publish Jacoco coverage report in Jenkins
+                jacoco execPattern: '**/target/jacoco.exec', // Path to the Jacoco exec file
+                       classPattern: '**/target/classes', // Path to compiled classes
+                       sourcePattern: '**/src/main/java', // Path to source files
+                       inclusionPattern: '**/*.class',    // Include all classes
+                       exclusionPattern: '**/*Test*'      // Exclude test classes
             }
         }
         
