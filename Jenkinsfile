@@ -39,7 +39,7 @@ pipeline {
                           -Dsonar.projectKey=devops \
                           -Dsonar.projectName="devops" \
                           -Dsonar.host.url=http://192.168.33.10:9000 \
-                          -Dsonar.token=sqp_2d407004e36c7bfcb71d2f9f8379ca80bdcbd9df
+                          -Dsonar.token=sqa_eb289a6ac791ff52cda5f748bd3f542b7dcd8f28
                     '''
                 }
             }
