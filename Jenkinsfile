@@ -1,11 +1,9 @@
 pipeline {
     agent any  // Run the pipeline on any available agent
-
     environment {
-        // Define DockerHub credentials for image login (optional if required)
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        // Define DockerHub credentials for image login (if needed)
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub') 
     }
-
     stages {
         stage('Checkout') {
             steps {
@@ -14,43 +12,16 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                // Clean the project to remove any previous builds
-                sh 'mvn clean'
-            }
-        }
-
-        stage('Compile') {
-            steps {
-                // Compile the project to prepare for packaging
-                sh 'mvn compile'
-            }
-        }
-
-        // Add Trivy Scan stage here to scan the Docker image
         stage('Trivy Scan') {
             steps {
                 script {
-                    echo 'Running Trivy scan on Docker image from Docker Hub...'
-
-                    // Login to DockerHub (optional if required)
-                    sh '''
-                        echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
-                    '''
-
-                    // Scan the pre-built Docker image from Docker Hub
-                    sh '''
-                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --severity HIGH,CRITICAL --format json xhalakox/foyer_backend:latest > trivy-report.json
-                    '''
-
-                    // Optional: Display scan result summary
-                    sh 'cat trivy-report.json | jq .'
+                    // Run Trivy scan on the existing image from DockerHub
+                    sh 'docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --severity HIGH,CRITICAL --format json xhalakox/foyer_backend:latest'
                 }
             }
         }
     }
-
+    
     post {
         always {
             // Run cleanup steps after the pipeline finishes
