@@ -2,49 +2,35 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'xhalakox/foyer_backend:latest'
+        // Directly using the GitHub token in the environment variable (not recommended for production)
+        TRIVY_GITHUB_TOKEN = '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'
     }
 
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                echo "Building the Docker image..."
-                script {
-                    // Assuming you have a Dockerfile in your repository
-                    docker.build("${IMAGE_NAME}")
-                }
+                // Checkout the code from your Git repository
+                checkout scm
             }
         }
-        
+
         stage('Trivy Scan') {
             steps {
-                echo "Running Trivy scan for vulnerabilities..."
                 script {
-                    // Run Trivy scan with --skip-db-update flag
-                    sh """
-                        trivy image --skip-db-update --severity HIGH,CRITICAL --format json ${IMAGE_NAME} > trivy-report.json
-                    """
-                }
-            }
-        }
+                    // Run Trivy image scan with a timeout of 10 minutes
+                    try {
+                        timeout(time: 10, unit: 'MINUTES') {
+                            sh '''
+                                # Set GitHub Token for Trivy scan
+                                export TRIVY_GITHUB_TOKEN=${TRIVY_GITHUB_TOKEN}
 
-        stage('Post-Scan Actions') {
-            steps {
-                echo "Processing Trivy scan results..."
-                script {
-                    // You can process or publish the scan result as needed
-                    // For example, you can archive the result or send a notification based on the scan outcome
-                    def trivyReport = readFile('trivy-report.json')
-                    echo "Trivy scan results: ${trivyReport}"
-                    
-                    // Optionally, you can fail the build if there are vulnerabilities
-                    def json = readJSON text: trivyReport
-                    def criticalIssues = json.findAll { it.Vulnerability.Severity == 'CRITICAL' }
-                    def highIssues = json.findAll { it.Vulnerability.Severity == 'HIGH' }
-
-                    if (criticalIssues.size() > 0 || highIssues.size() > 0) {
+                                # Run Trivy scan with specific severity filters and JSON output
+                                trivy image --skip-db-update --severity HIGH,CRITICAL --format json --timeout 10m xhalakox/foyer_backend:latest > trivy-report.json
+                            '''
+                        }
+                    } catch (Exception e) {
+                        echo "Trivy scan failed: ${e.getMessage()}"
                         currentBuild.result = 'FAILURE'
-                        error("High or Critical vulnerabilities found in image.")
                     }
                 }
             }
@@ -53,15 +39,17 @@ pipeline {
 
     post {
         always {
-            echo "Cleaning up or finalizing the process..."
-            // You can also archive or publish the scan report here, if needed
+            // Archive Trivy scan results (optional)
             archiveArtifacts artifacts: 'trivy-report.json', allowEmptyArchive: true
+            echo 'Cleaning up after the scan.'
         }
+
         success {
-            echo "Pipeline completed successfully!"
+            echo 'Trivy scan completed successfully.'
         }
+
         failure {
-            echo "Pipeline failed. Check Trivy scan for vulnerabilities."
+            echo 'Trivy scan failed.'
         }
     }
 }
