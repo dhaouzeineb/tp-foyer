@@ -1,16 +1,16 @@
 repos:
-  - repo: https://github.com/pre-commit/mirrors-flake8
-    rev: v5.0.4  # Specify the version of flake8
-    hooks:
-      - id: flake8
-        name: flake8
-        description: Lint Python code with flake8
-        files: \.py$
-
-  - repo: https://github.com/pre-commit/mirrors-trailing-whitespace
-    rev: v1.0.0  # Specify the version for trailing-whitespace
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
     hooks:
       - id: trailing-whitespace
-        name: Remove trailing whitespace
-        description: Automatically remove trailing whitespace
-        files: .*
+      - id: end-of-file-fixer
+      - id: check-yaml
+  - repo: https://github.com/psf/black
+    rev: 21.9b0
+    hooks:
+      - id: black
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.1
+    hooks:
+      - id: bandit
+        args: ["-r"]
