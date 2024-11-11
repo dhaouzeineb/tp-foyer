@@ -2,7 +2,7 @@ pipeline {
     agent any  // Run the pipeline on any available agent
 
     environment {
-        // Define DockerHub credentials for image login and push stages (currently not used)
+        // Define DockerHub credentials for image login (optional if required)
         DOCKERHUB_CREDENTIALS = credentials('dockerhub')
     }
 
@@ -28,63 +28,18 @@ pipeline {
             }
         }
 
-        // Uncomment to run SonarQube code analysis if required
-        /*
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('sonar') {
-                    // Run SonarQube analysis on the code, setting project properties dynamically
-                    sh '''
-                        mvn clean verify sonar:sonar \
-                          -Dsonar.projectKey=devops \
-                          -Dsonar.projectName="devops" \
-                          -Dsonar.host.url=http://192.168.33.10:9000 \
-                          -Dsonar.token=sqp_2d407004e36c7bfcb71d2f9f8379ca80bdcbd9df
-                    '''
-                }
-            }
-        }
-        */
-
-        // Uncomment to upload artifact to Nexus if required
-        /*
-        stage("NEXUS") {
-            steps {
-                script {
-                    // Upload generated JAR artifact to Nexus repository
-                    nexusArtifactUploader artifacts: [[
-                        artifactId: 'tp-foyer',
-                        classifier: '',
-                        file: 'target/tp-foyer-5.0.0.jar',
-                        type: 'jar'
-                    ]],
-                    credentialsId: 'nexus',
-                    groupId: 'esprit.tn',
-                    nexusUrl: '192.168.33.10:8081',
-                    nexusVersion: 'nexus3',
-                    protocol: 'http',
-                    repository: 'maven-hosted',
-                    version: "0.0.1-$BUILD_NUMBER"
-                }
-            }
-        }
-        */
-
-        // Docker build and Trivy scan stages
-        stage('Build Docker Image') {
-            steps {
-                // Build the Docker image from the Dockerfile in the project root
-                sh 'docker build -t xhalakox/foyer_backend:latest .'
-            }
-        }
-
-        // Add Trivy Scan stage here
+        // Add Trivy Scan stage here to scan the Docker image
         stage('Trivy Scan') {
             steps {
                 script {
-                    echo 'Running Trivy scan...'
+                    echo 'Running Trivy scan on Docker image from Docker Hub...'
 
-                    // Run Trivy scan using Docker container
+                    // Login to DockerHub (optional if required)
+                    sh '''
+                        echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+                    '''
+
+                    // Scan the pre-built Docker image from Docker Hub
                     sh '''
                         docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --severity HIGH,CRITICAL --format json xhalakox/foyer_backend:latest > trivy-report.json
                     '''
@@ -92,13 +47,6 @@ pipeline {
                     // Optional: Display scan result summary
                     sh 'cat trivy-report.json | jq .'
                 }
-            }
-        }
-
-        stage('Deploy with Docker Compose') {
-            steps {
-                // Deploy the application using Docker Compose, detached mode
-                sh 'docker-compose up -d'
             }
         }
     }
