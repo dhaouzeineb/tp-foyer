@@ -72,44 +72,11 @@ pipeline {
                 }
             }
         }
-/*
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t xhalakox/foyer_backend:latest .'
-            }
-        }
- */
-        /*
-        stage('Docker Login') {
-            steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-            }
-        }
- */
-        /*
-        stage('Push Docker Image to DockerHub') {
-            steps {
-                sh 'docker push xhalakox/foyer_backend:latest'
-            }
-        }
- */
-        /*
-        stage('Deploy with Docker Compose') {
+
+        // Docker Compose integration
+        stage('Start Services with Docker Compose') {
             steps {
                 sh 'docker-compose up -d'
-            }
-        }
- */
-        // New stages for monitoring with Prometheus and Grafana
-        stage('Start Prometheus') {
-            steps {
-                sh 'docker run -d --name prometheus -p 9090:9090 prom/prometheus'
-            }
-        }
-
-        stage('Start Grafana') {
-            steps {
-                sh 'docker run -d --name grafana -p 3000:3000 grafana/grafana'
             }
         }
 
@@ -117,14 +84,14 @@ pipeline {
             steps {
                 script {
                     sh """
-                    docker exec -it prometheus sh -c '
+                    docker exec -it my-prometheus sh -c '
                     echo "
                     - job_name: jenkins
                       metrics_path: /prometheus
                       static_configs:
-                        - targets: [\\"192.168.1.244:8080\\"]" >> /etc/prometheus/prometheus.yml
+                        - targets: [\\"192.168.33.10:8080\\"]" >> /etc/prometheus/prometheus.yml
                     '
-                    docker restart prometheus
+                    docker restart my-prometheus
                     """
                 }
             }
