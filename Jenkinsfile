@@ -72,31 +72,34 @@ pipeline {
                 }
             }
         }
-
+/*
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t xhalakox/foyer_backend:latest .'
             }
         }
-
+ */
+        /*
         stage('Docker Login') {
             steps {
                 sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
         }
-
+ */
+        /*
         stage('Push Docker Image to DockerHub') {
             steps {
                 sh 'docker push xhalakox/foyer_backend:latest'
             }
         }
-
+ */
+        /*
         stage('Deploy with Docker Compose') {
             steps {
                 sh 'docker-compose up -d'
             }
         }
-
+ */
         // New stages for monitoring with Prometheus and Grafana
         stage('Start Prometheus') {
             steps {
