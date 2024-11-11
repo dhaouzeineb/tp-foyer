@@ -3,9 +3,6 @@ pipeline {
 
     environment {
         MAVEN_HOME = '/usr/share/maven'
-        SONAR_HOST_URL = 'http://192.168.33.10:9000'
-        SONAR_PROJECT_KEY = 'foyer'
-        DEPENDENCY_CHECK_DATA = '/opt/dependency-check/data'
 
     }
 
@@ -24,21 +21,17 @@ pipeline {
             }
         }
 
-        stage('Run SonarQube Analysis') {
+        stage('Upload to Nexus') {
             steps {
-                withCredentials([string(credentialsId: 'SonarQubeToken', variable: 'SONAR_TOKEN')]) {
-                    script {
-                        sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
-                    }
+
+                script {
+                    sh "${MAVEN_HOME}/bin/mvn deploy"
+
                 }
             }
+
         }
 
-        stage('dependency check') {
-                    steps {
-                        dependencyCheck additionalArguments: '--format HTML', nvdCredentialsId: 'NVD', odcInstallation: 'DP-Check'
-                    }
-                }
     }
     post {
         always {
