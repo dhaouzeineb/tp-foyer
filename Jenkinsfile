@@ -3,7 +3,7 @@ pipeline {
     environment {
         // Define the SonarQube scanner tool to be used for code analysis
         SCANNER_HOME = tool 'SonarQube'  
-        // Define DockerHub credentials for image login and push stages
+        // Define DockerHub credentials for image login and push stages (currently not used)
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') 
     }
     stages {
@@ -13,12 +13,22 @@ pipeline {
                 git branch: 'louay', credentialsId: 'github', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
             }
         }
+
+        // Add the Pre-commit stage to run code checks
+        stage('Pre-commit') {
+            steps {
+                // Run pre-commit checks (this assumes pre-commit is installed and configured)
+                sh 'pre-commit run --all-files'
+            }
+        }
+
         stage('Build') {
             steps {
                 // Clean the project to remove any previous builds
                 sh 'mvn clean'
             }
         }
+
         stage('Compile') {
             steps {
                 // Compile the project to prepare for packaging
@@ -64,7 +74,8 @@ pipeline {
             }
         }
 
-        // Build Docker Image (Uncomment if Docker image build is required)
+        // Docker stages are disabled for now
+        /*
         stage('Build Docker Image') {
             steps {
                 // Build the Docker image from the Dockerfile in the project root
@@ -72,7 +83,6 @@ pipeline {
             }
         }
 
-        // Docker Login (Uncomment if Docker login is needed)
         stage('Docker Login') {
             steps {
                 // Log in to DockerHub using credentials from environment variables
@@ -80,7 +90,6 @@ pipeline {
             }
         }
 
-        // Push Docker Image to DockerHub (Uncomment if pushing Docker image is needed)
         stage('Push Docker Image to DockerHub') {
             steps {
                 // Push the Docker image to DockerHub repository
@@ -88,13 +97,13 @@ pipeline {
             }
         }
 
-        // Deploy with Docker Compose (Uncomment if Docker Compose deployment is needed)
         stage('Deploy with Docker Compose') {
             steps {
                 // Deploy the application using Docker Compose, detached mode
                 sh 'docker-compose up -d'
             }
         }
+        */
     }
     
     post {
