@@ -5,14 +5,12 @@ pipeline {
         SCANNER_HOME = tool 'SonarQube'  
         // Define DockerHub credentials for image login and push stages (currently not used)
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') 
-        // GitHub token for Trivy scan
-        TRIVY_GITHUB_TOKEN = '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'
     }
     stages {
         stage('Checkout') {
             steps {
                 // Checkout code from the Git repository, specifying branch and credentials
-                git branch: 'louay', credentialsId: 'github', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
+                git branch: 'MohamedMnif', credentialsId: 'github', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
             }
         }
 
@@ -74,7 +72,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 // Build the Docker image from the Dockerfile in the project root
-                sh 'docker build -t xhalakox/foyer_backend:latest .'
+                sh 'docker build -t mnifmohamed547/foyer_backend:latest .'
             }
         }
 
@@ -88,7 +86,7 @@ pipeline {
         stage('Push Docker Image to DockerHub') {
             steps {
                 // Push the Docker image to DockerHub repository
-                sh 'docker push xhalakox/foyer_backend:latest'
+                sh 'docker push mnifmohamed547/foyer_backend:latest'
             }
         }
 
