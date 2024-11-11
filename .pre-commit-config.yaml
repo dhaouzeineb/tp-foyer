@@ -1,14 +1,18 @@
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1  # Use the latest stable version
-    hooks:
-      - id: trailing-whitespace    # Removes trailing whitespace
-      - id: end-of-file-fixer       # Ensures the file ends with a newline
-      - id: check-yaml              # Validates YAML files
-      - id: check-json              # Validates JSON files
-      - id: detect-aws-credentials  # Detects hardcoded AWS credentials
-      - id: check-added-large-files # Warns about large files
-  - repo: https://github.com/psf/black
-    rev: 22.3.0  # Specify the version
-    hooks:
-      - id: black                    # Formats Python code with Black
+- repo: https://github.com/hmrc/security-git-hooks
+  rev: release/1.11.0
+  hooks:
+    - id: secrets_filecontent
+      name: Detect secrets in file content
+      description: Checks for potential secrets in the content of staged files.
+      files: \.(txt|aws\.file|password\.file|\.pem|\.key|\.env|\.log)$
+      exclude: ^(README\.md|config\.json)$
+
+    - id: secrets_filename
+      name: Detect sensitive filenames
+      description: Detect files with names indicating sensitive data (e.g. *.key, *.pem, etc.).
+      files: \.(pem|key|env|password|log)$
+
+    - id: hooks_version_check
+      name: Check pre-commit hook versions
+      description: Ensures pre-commit hooks are up to date.
