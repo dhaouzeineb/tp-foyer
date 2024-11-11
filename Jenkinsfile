@@ -1,11 +1,13 @@
 pipeline {
     agent any  // Run the pipeline on any available agent
+
     environment {
         // Define the SonarQube scanner tool to be used for code analysis
-        SCANNER_HOME = tool 'SonarQube'  
+        SCANNER_HOME = tool 'SonarQube'
         // Define DockerHub credentials for image login and push stages (currently not used)
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub') 
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
     }
+
     stages {
         stage('Checkout') {
             steps {
@@ -27,7 +29,7 @@ pipeline {
                 sh 'mvn compile'
             }
         }
-        
+
         // Uncomment to run SonarQube code analysis if required
         stage('SonarQube Analysis') {
             steps {
@@ -74,18 +76,22 @@ pipeline {
                 sh 'docker build -t xhalakox/foyer_backend:latest .'
             }
         }
+        */
 
-        stage('Docker Login') {
+        // Add Trivy Scan stage here
+        stage('Trivy Scan') {
             steps {
-                // Log in to DockerHub using credentials from environment variables
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-            }
-        }
+                script {
+                    echo 'Running Trivy scan...'
 
-        stage('Push Docker Image to DockerHub') {
-            steps {
-                // Push the Docker image to DockerHub repository
-                sh 'docker push xhalakox/foyer_backend:latest'
+                    // Run Trivy scan using Docker container
+                    sh '''
+                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --severity HIGH,CRITICAL --format json xhalakox/foyer_backend:latest > trivy-report.json
+                    '''
+
+                    // Optional: Display scan result summary
+                    sh 'cat trivy-report.json | jq .'
+                }
             }
         }
 
@@ -95,9 +101,8 @@ pipeline {
                 sh 'docker-compose up -d'
             }
         }
-        */
     }
-    
+
     post {
         always {
             // Run cleanup steps after the pipeline finishes
