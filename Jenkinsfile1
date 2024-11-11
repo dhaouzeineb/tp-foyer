@@ -31,6 +31,16 @@ pipeline {
                 }
             }
         }
+        stage('Upload to Nexus') {
+            steps {
+
+                script {
+                    sh "${MAVEN_HOME}/bin/mvn deploy"
+
+                }
+            }
+
+        }
 
         stage('Publish Code Coverage') {
             steps {
