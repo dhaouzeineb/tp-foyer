@@ -23,7 +23,7 @@ services:
       SPRING_APPLICATION_JSON: '{
         "spring": {
           "datasource": {
-            "url": "jdbc:mysql://localhost:3307/timesheet_db?createDatabaseIfNotExist=true",
+            "url": "jdbc:mysql://mysqldb:3306/timesheet_db?createDatabaseIfNotExist=true",
             "username": "root",
             "password": "",
             "driver-class-name": "com.mysql.cj.jdbc.Driver"
@@ -40,6 +40,3 @@ services:
       }'
     stdin_open: true
     tty: true
-
-volumes:
-  db:
