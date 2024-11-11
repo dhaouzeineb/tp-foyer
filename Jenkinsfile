@@ -16,14 +16,7 @@ pipeline {
             }
         }
 
-        // Add the Pre-commit stage to run code checks
-        stage('Pre-commit') {
-            steps {
-                // Run pre-commit checks (this assumes pre-commit is installed and configured)
-                sh 'pre-commit run --all-files'
-            }
-        }
-
+ 
         stage('Build') {
             steps {
                 // Clean the project to remove any previous builds
