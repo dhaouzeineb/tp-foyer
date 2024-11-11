@@ -2,16 +2,16 @@ pipeline {
     agent any
 
     environment {
-        MAVEN_HOME = '/usr/share/maven'
-        SONAR_HOST_URL = 'http://10.0.2.15:9000'
-        SONAR_PROJECT_KEY = 'foyer'
-        DOCKER_HUB_REPO = 'wissal005/foyer_backend'
+        MAVEN_HOME = '/usr/share/maven'                   // Path to Maven installation
+        SONAR_HOST_URL = 'http://10.0.2.15:9000'          // SonarQube server URL
+        SONAR_PROJECT_KEY = 'foyer'                       // SonarQube project key
+        DOCKER_HUB_REPO = 'wissal005/foyer_backend'       // Docker Hub repository
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'wissal', credentialsId: 'GitHub-Credentials', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
+                git branch: 'wissal', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
             }
         }
 
@@ -25,9 +25,41 @@ pipeline {
 
         stage('Run SonarQube Analysis') {
             steps {
-                withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')]) {
+                withCredentials([string(credentialsId: 'SonarQubeToken', variable: 'SONAR_TOKEN')]) {
                     script {
                         sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
+                    }
+                }
+            }
+        }
+
+        stage('Publish Code Coverage') {
+            steps {
+                script {
+                    sh "${MAVEN_HOME}/bin/mvn jacoco:report"
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: 'target/', allowEmptyArchive: true
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker build -t ${DOCKER_HUB_REPO}:latest ."
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([string(credentialsId: 'dockerHubToken', variable: 'DOCKER_HUB_TOKEN')]) {
+                    script {
+                        sh "echo $DOCKER_HUB_TOKEN | docker login -u wissal005 --password-stdin"
+                        sh "docker push ${DOCKER_HUB_REPO}:latest"
                     }
                 }
             }
@@ -37,7 +69,17 @@ pipeline {
             steps {
                 echo 'Deploying to Nexus...'
                 withCredentials([usernamePassword(credentialsId: 'nexus-credentials-id', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
-                    sh "mvn deploy -DskipTests -DaltDeploymentRepository=deploymentRepo::default::http://$NEXUS_USERNAME:$NEXUS_PASSWORD@10.0.2.15:8081/repository/maven-snapshots/"
+                    sh "${MAVEN_HOME}/bin/mvn deploy -DskipTests -DaltDeploymentRepository=deploymentRepo::default::http://$NEXUS_USERNAME:$NEXUS_PASSWORD@10.0.2.15:8081/repository/maven-snapshots/"
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Commands for deployment using docker-compose
+                    sh 'docker compose down'
+                    sh 'docker compose up -d'
                 }
             }
         }
@@ -49,4 +91,3 @@ pipeline {
         }
     }
 }
-
