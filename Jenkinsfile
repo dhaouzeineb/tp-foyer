@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Set the GitHub Token as an environment variable (if needed)
-        TRIVY_GITHUB_TOKEN = 'your_github_token_here'
+        TRIVY_GITHUB_TOKEN = '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'
     }
 
     stages {
