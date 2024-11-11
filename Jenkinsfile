@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        // Directly using the GitHub token in the environment variable (not recommended for production)
+        // Set your GitHub token here
         TRIVY_GITHUB_TOKEN = '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'
     }
 
@@ -17,15 +17,12 @@ pipeline {
         stage('Trivy Scan') {
             steps {
                 script {
-                    // Run Trivy image scan with secret detection enabled and a timeout of 10 minutes
+                    // Run Trivy image scan with a timeout of 10 minutes
                     try {
                         timeout(time: 10, unit: 'MINUTES') {
                             sh '''
-                                # Set GitHub Token for Trivy scan
                                 export TRIVY_GITHUB_TOKEN=${TRIVY_GITHUB_TOKEN}
-
-                                # Run Trivy scan for vulnerabilities and secret detection
-                                trivy image --skip-db-update --severity HIGH,CRITICAL --format json --timeout 10m --secrets xhalakox/foyer_backend:latest > trivy-report.json
+                                trivy image --skip-db-update --severity HIGH,CRITICAL --format json --timeout 10m xhalakox/foyer_backend:latest
                             '''
                         }
                     } catch (Exception e) {
@@ -39,8 +36,7 @@ pipeline {
 
     post {
         always {
-            // Archive Trivy scan results (optional)
-            archiveArtifacts artifacts: 'trivy-report.json', allowEmptyArchive: true
+            // Cleanup actions (if necessary)
             echo 'Cleaning up after the scan.'
         }
 
