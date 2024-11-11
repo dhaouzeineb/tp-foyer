@@ -2,8 +2,6 @@ pipeline {
     agent any  // Run the pipeline on any available agent
 
     environment {
-        // Define the SonarQube scanner tool to be used for code analysis
-        SCANNER_HOME = tool 'SonarQube'
         // Define DockerHub credentials for image login and push stages (currently not used)
         DOCKERHUB_CREDENTIALS = credentials('dockerhub')
     }
@@ -31,6 +29,7 @@ pipeline {
         }
 
         // Uncomment to run SonarQube code analysis if required
+        /*
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonar') {
@@ -45,8 +44,10 @@ pipeline {
                 }
             }
         }
+        */
 
         // Uncomment to upload artifact to Nexus if required
+        /*
         stage("NEXUS") {
             steps {
                 script {
@@ -67,16 +68,15 @@ pipeline {
                 }
             }
         }
+        */
 
-        // Docker stages are disabled for now
-        /*
+        // Docker build and Trivy scan stages
         stage('Build Docker Image') {
             steps {
                 // Build the Docker image from the Dockerfile in the project root
                 sh 'docker build -t xhalakox/foyer_backend:latest .'
             }
         }
-        */
 
         // Add Trivy Scan stage here
         stage('Trivy Scan') {
