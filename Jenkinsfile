@@ -109,7 +109,7 @@ pipeline {
                         timeout(time: 10, unit: 'MINUTES') {
                             sh '''
                                 export TRIVY_GITHUB_TOKEN=${TRIVY_GITHUB_TOKEN}
-                                trivy image --skip-db-update --severity HIGH,CRITICAL --format json --timeout 10m --scanners vuln xhalakox/foyer_backend:latest
+                                trivy image --skip-db-update --severity HIGH,CRITICAL --format json --timeout 30m xhalakox/foyer_backend:latest
                             '''
                         }
                     } catch (Exception e) {
