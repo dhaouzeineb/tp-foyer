@@ -43,7 +43,7 @@ services:
       }'
     stdin_open: true
     tty: true
-    entrypoint: /bin/bash -c "echo 'Container app-timesheet Started' && java -jar /path/to/your/app.jar"  # Custom log and start app
+    entrypoint: /bin/sh -c "echo 'Container app-timesheet Started' && java -jar /path/to/your/app.jar"  # Custom log and start app
     logging:
       driver: "json-file"
       options:
