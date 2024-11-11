@@ -9,6 +9,11 @@ services:
       - 3307:3306
     volumes:
       - db:/var/lib/mysql
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   app-timesheet:
     depends_on:
@@ -38,6 +43,12 @@ services:
       }'
     stdin_open: true
     tty: true
+    entrypoint: /bin/bash -c "echo 'Container app-timesheet Started' && java -jar /path/to/your/app.jar"  # Custom log and start app
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   db:
