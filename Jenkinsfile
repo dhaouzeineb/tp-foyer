@@ -17,15 +17,15 @@ pipeline {
         stage('Trivy Scan') {
             steps {
                 script {
-                    // Run Trivy image scan with a timeout of 10 minutes
+                    // Run Trivy image scan with secret detection enabled and a timeout of 10 minutes
                     try {
                         timeout(time: 10, unit: 'MINUTES') {
                             sh '''
                                 # Set GitHub Token for Trivy scan
                                 export TRIVY_GITHUB_TOKEN=${TRIVY_GITHUB_TOKEN}
 
-                                # Run Trivy scan with specific severity filters and JSON output
-                                trivy image --skip-db-update --severity HIGH,CRITICAL --format json --timeout 10m xhalakox/foyer_backend:latest > trivy-report.json
+                                # Run Trivy scan for vulnerabilities and secret detection
+                                trivy image --skip-db-update --severity HIGH,CRITICAL --format json --timeout 10m --secrets xhalakox/foyer_backend:latest > trivy-report.json
                             '''
                         }
                     } catch (Exception e) {
