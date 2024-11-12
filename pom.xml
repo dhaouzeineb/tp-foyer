@@ -16,12 +16,27 @@
     <properties>
         <java.version>17</java.version>
     </properties>
+	<distributionManagement>
+		<!-- Repository for releases -->
+		<repository>
+			<id>deploymentRe</id> <!-- This ID matches the one in settings.xml -->
+			<name>Nexus Repository</name>
+			<url>http://192.168.33.10:8081/repository/maven-releases/</url>
+		</repository>
 
+		<!-- Repository for snapshots (if you use snapshots) -->
+		<snapshotRepository>
+			<id>deploymentRe</id>
+			<name>Nexus Snapshot Repository</name>
+			<url>http://192.168.33.10:8081/repository/maven-snapshots/</url>
+		</snapshotRepository>
+
+	</distributionManagement>
 
 	<!-- Other necessary configurations -->
 	<repositories>
 		<repository>
-			<id>deploymentRepo</id>
+			<id>deploymentRe</id>
 			<url>http://192.168.33.10:8081/repository/maven-releases/</url>
 		</repository>
 	</repositories>
@@ -118,20 +133,5 @@
             	</plugin>
         </plugins>
     </build>
-	<distributionManagement>
-		<!-- Repository for releases -->
-		<repository>
-			<id>deploymentRepo</id> <!-- This ID matches the one in settings.xml -->
-			<name>Nexus Repository</name>
-			<url>http://192.168.33.10:8081/repository/maven-releases/</url>
-		</repository>
-
-		<!-- Repository for snapshots (if you use snapshots) -->
-		<snapshotRepository>
-			<id>deploymentRepo</id>
-			<name>Nexus Snapshot Repository</name>
-			<url>http://192.168.33.10:8081/repository/maven-snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 </project>
