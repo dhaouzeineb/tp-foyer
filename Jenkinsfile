@@ -30,21 +30,6 @@ pipeline {
             }
         }
         
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('sonar') {
-                    // Run SonarQube analysis on the code, setting project properties dynamically
-                    sh '''
-                        mvn clean verify sonar:sonar \
-                          -Dsonar.projectKey=devops \
-                          -Dsonar.projectName="devops" \
-                          -Dsonar.host.url=http://192.168.33.10:9000 \
-                          -Dsonar.token=sqp_2d407004e36c7bfcb71d2f9f8379ca80bdcbd9df
-                    '''
-                }
-            }
-        }
-
         stage('JaCoCo Coverage Report') {
             steps {
                 // Run tests and generate JaCoCo code coverage report
@@ -60,6 +45,21 @@ pipeline {
                        sourcePattern: '**/src/main/java', 
                        inclusionPattern: '**/*.class', 
                        exclusionPattern: '**/*Test*'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonar') {
+                    // Run SonarQube analysis on the code, setting project properties dynamically
+                    sh '''
+                        mvn clean verify sonar:sonar \
+                          -Dsonar.projectKey=devops \
+                          -Dsonar.projectName="devops" \
+                          -Dsonar.host.url=http://192.168.33.10:9000 \
+                          -Dsonar.token=sqp_2d407004e36c7bfcb71d2f9f8379ca80bdcbd9df
+                    '''
+                }
             }
         }
 
@@ -148,6 +148,3 @@ pipeline {
         failure {
             // Print a failure message if any stage fails
             echo 'Pipeline failed.'
-        }
-    }
-}
