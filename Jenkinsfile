@@ -115,7 +115,7 @@ pipeline {
         }
 
         // Docker stages are disabled for now
-        /*
+        
         stage('Build Docker Image') {
             steps {
                 // Build the Docker image from the Dockerfile in the project root
@@ -143,7 +143,7 @@ pipeline {
                 sh 'docker-compose up -d'
             }
         }
-        */
+        
               stage('Prometheus & Grafana (F') {
             steps {
                 echo 'Simulating Prometheus & Grafana monitoring...'
@@ -153,7 +153,6 @@ pipeline {
 
         stage('Start Monitoring Containers') {
             steps {
-                // Add your monitoring command or script here
                 echo 'Starting to monitor containers...'
             }
         }
