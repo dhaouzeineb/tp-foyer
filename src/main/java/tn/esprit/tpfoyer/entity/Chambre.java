@@ -1,3 +1,8 @@
+package tn.esprit.tpfoyer.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 @Entity
 @Access(AccessType.FIELD)  // Explicitly set field access for Hibernate
 @Getter
