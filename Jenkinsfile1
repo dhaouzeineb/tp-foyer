@@ -47,7 +47,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerHubToken', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
                     script {
                         sh "sudo docker login -u $DOCKER_USER -p $DOCKER_PASSWORD"
-                        sh "sudo push ${DOCKER_HUB_REPO}:latest"
+                        sh "push ${DOCKER_HUB_REPO}:latest"
                     }
                 }
             }
