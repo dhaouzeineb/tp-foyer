@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.Set;
 //adem modfier
 @Entity
+@Access(AccessType.FIELD)  // Explicitly set field access for Hibernate
 @Getter
 @Setter
 @AllArgsConstructor
@@ -29,10 +30,7 @@ public class Foyer {
     Universite universite;
 
     @OneToMany(mappedBy = "foyer")
-            @JsonIgnore
-            @ToString.Exclude
+    @JsonIgnore
+    @ToString.Exclude
     Set<Bloc> blocs;
-
 }
-
-
