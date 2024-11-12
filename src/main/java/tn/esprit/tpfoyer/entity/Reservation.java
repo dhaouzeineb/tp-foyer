@@ -9,6 +9,8 @@ import java.util.Set;
 
 //test git
 @Entity
+@Access(AccessType.FIELD)  // Explicitly set field access for Hibernate
+
 @Getter
 @Setter
 @AllArgsConstructor
