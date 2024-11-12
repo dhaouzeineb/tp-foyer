@@ -72,8 +72,9 @@
 <dependency>
     <groupId>org.hibernate</groupId>
     <artifactId>hibernate-core</artifactId>
-    <version>5.6.15.Final</version> <!-- Ensure this is correct for your setup -->
+    <version>7.0.0.Final</version> <!-- Or the latest 7.x version -->
 </dependency>
+
 
     </dependencies>
 
