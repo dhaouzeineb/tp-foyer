@@ -144,9 +144,24 @@ pipeline {
 
         stage('Email Notification') {
             steps {
-                mail to: 'you@example.com',
-                     subject: "Build ${currentBuild.fullDisplayName}",
-                     body: "The build ${currentBuild.fullDisplayName} finished with status ${currentBuild.result}"
+                script {
+                    // Fetch SMTP credentials using Jenkins' credentials system
+                    def smtpUser = credentials('smtp-username')  // Replace with your SMTP username credential ID
+                    def smtpPassword = credentials('smtp-password')  // Replace with your SMTP password credential ID
+                    
+                    // Send email using the SMTP credentials
+                    emailext (
+                        to: 'louaybenabidi@gmail.com',
+                        subject: "Build ${currentBuild.fullDisplayName}",
+                        body: "The build ${currentBuild.fullDisplayName} finished with status ${currentBuild.result}",
+                        mimeType: 'text/html',
+                        smtpHost: 'server1.concourstunisie.com',  // Replace with your SMTP host (e.g., smtp.gmail.com)
+                        smtpPort: '465',  // Use appropriate SMTP port (587 for TLS)
+                        smtpUser: smtpUser,  // Use SMTP username from Jenkins credentials
+                        smtpPassword: smtpPassword,  // Use SMTP password from Jenkins credentials
+                        debug: true
+                    )
+                }
             }
         }
     }
