@@ -35,3 +35,5 @@ networks:
 
 volumes:
   db_data:
+    # You can also specify the driver if needed, for example:
+    # driver: local
