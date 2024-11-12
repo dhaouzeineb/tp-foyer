@@ -16,7 +16,6 @@ pipeline {
             }
         }
 
- 
         stage('Build') {
             steps {
                 // Clean the project to remove any previous builds
@@ -31,7 +30,6 @@ pipeline {
             }
         }
         
-        // Uncomment to run SonarQube code analysis if required
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonar') {
@@ -47,7 +45,24 @@ pipeline {
             }
         }
 
-        // Uncomment to upload artifact to Nexus if required
+        stage('JaCoCo Coverage Report') {
+            steps {
+                // Run tests and generate JaCoCo code coverage report
+                sh 'mvn clean test jacoco:report'
+            }
+        }
+
+        stage('JaCoCo Coverage') {
+            steps {
+                // Publish JaCoCo coverage results
+                jacoco execPattern: '**/target/jacoco.exec', 
+                       classPattern: '**/target/classes', 
+                       sourcePattern: '**/src/main/java', 
+                       inclusionPattern: '**/*.class', 
+                       exclusionPattern: '**/*Test*'
+            }
+        }
+
         stage("NEXUS") {
             steps {
                 script {
