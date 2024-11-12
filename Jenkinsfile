@@ -148,3 +148,6 @@ pipeline {
         failure {
             // Print a failure message if any stage fails
             echo 'Pipeline failed.'
+        }
+    }
+}
