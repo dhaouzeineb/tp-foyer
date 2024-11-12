@@ -48,10 +48,17 @@ pipeline {
                 git branch: 'louay', credentialsId: 'github', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
             }
         }
+        
         stage('Clean and compile') {
             steps {
                 // Clean and compile the project in a single step
                 sh 'mvn clean compile'
+            }
+        }
+                stage('Deploy with Docker Compose') {
+            steps {
+                // Deploy the application using Docker Compose, detached mode
+                sh 'docker-compose up -d'
             }
         }
 
@@ -137,12 +144,7 @@ pipeline {
             }
         }
 /*
-        stage('Deploy with Docker Compose') {
-            steps {
-                // Deploy the application using Docker Compose, detached mode
-                sh 'docker-compose up -d'
-            }
-        }
+
         */
               stage('Prometheus & Grafana (F') {
             steps {
