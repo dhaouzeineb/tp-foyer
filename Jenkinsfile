@@ -136,14 +136,14 @@ pipeline {
                 sh 'docker push xhalakox/foyer_backend:latest'
             }
         }
-*/
+/*
         stage('Deploy with Docker Compose') {
             steps {
                 // Deploy the application using Docker Compose, detached mode
                 sh 'docker-compose up -d'
             }
         }
-        
+        */
               stage('Prometheus & Grafana (F') {
             steps {
                 echo 'Simulating Prometheus & Grafana monitoring...'
