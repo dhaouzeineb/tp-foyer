@@ -10,36 +10,13 @@
     </parent>
     <groupId>tn.esprit</groupId>
     <artifactId>tp-foyer</artifactId>
-    <version>5.0.0</version>
+    <version>5.0.0-SNAPSHOT</version>
     <name>tp-foyer</name>
     <description>tp-foyer</description>
     <properties>
         <java.version>17</java.version>
     </properties>
-	<distributionManagement>
-		<!-- Repository for releases -->
-		<repository>
-			<id>deploymentRe</id> <!-- This ID matches the one in settings.xml -->
-			<name>Nexus Repository</name>
-			<url>http://192.168.33.10:8081/repository/maven-releases/</url>
-		</repository>
 
-		<!-- Repository for snapshots (if you use snapshots) -->
-		<snapshotRepository>
-			<id>deploymentRe</id>
-			<name>Nexus Snapshot Repository</name>
-			<url>http://192.168.33.10:8081/repository/maven-snapshots/</url>
-		</snapshotRepository>
-
-	</distributionManagement>
-
-	<!-- Other necessary configurations -->
-	<repositories>
-		<repository>
-			<id>deploymentRe</id>
-			<url>http://192.168.33.10:8081/repository/maven-releases/</url>
-		</repository>
-	</repositories>
     <dependencies>
 
         <dependency>
@@ -55,13 +32,6 @@
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
         </dependency>
-
-	<dependency>
-		<groupId>org.jacoco</groupId>
-		<artifactId>org.jacoco.agent</artifactId>
-		<version>0.8.7</version>
-		<scope>test</scope>
-	</dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -84,6 +54,18 @@
 
 
     </dependencies>
+	<distributionManagement>
+		<repository>
+			<id>deploymentRepo</id>
+			<name>Nexus Repository</name>
+			<url>http://192.168.33.10:8081/repository/maven-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>deploymentRepo</id>
+			<name>Nexus Snapshot Repository</name>
+			<url>http://192.168.33.10:8081/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
     <build>
         <plugins>

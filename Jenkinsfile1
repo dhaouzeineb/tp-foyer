@@ -5,6 +5,7 @@ pipeline {
         MAVEN_HOME = '/usr/share/maven'
         SONAR_HOST_URL = 'http://192.168.33.10:9000'
         SONAR_PROJECT_KEY = 'foyer'
+        DOCKER_HUB_REPO = 'hassen12/foyer_backend'  // Docker Hub repository
     }
 
     stages {
@@ -32,6 +33,35 @@ pipeline {
             }
         }
 
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker build -t ${DOCKER_HUB_REPO}:latest ."
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                // Use the credentials for Docker login
+                withCredentials([usernamePassword(credentialsId: 'dockerHubToken', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
+                        sh "docker login -u $DOCKER_USER -p $DOCKER_PASSWORD"
+                        sh "docker push ${DOCKER_HUB_REPO}:latest"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    sh 'docker compose down'
+                    sh 'docker compose up -d'
+                }
+            }
+        }
+
         stage('Publish Code Coverage') {
             steps {
                 script {
@@ -45,6 +75,7 @@ pipeline {
             }
         }
     }
+
     post {
         always {
             echo 'Pipeline completed.'
