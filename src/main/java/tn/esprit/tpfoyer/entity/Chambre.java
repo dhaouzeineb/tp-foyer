@@ -22,9 +22,13 @@ public class Chambre {
     @Enumerated(EnumType.STRING)
     TypeChambre typeC;
 
-    @OneToMany(mappedBy = "chambre")
+
+
+    @OneToMany
     Set<Reservation> reservations;
 
-    @ManyToOne(cascade = CascadeType.ALL)  // Make sure the cascade is appropriate
+    @ManyToOne(cascade = CascadeType.ALL)
     Bloc bloc;
+
 }
+
