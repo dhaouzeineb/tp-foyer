@@ -9,14 +9,12 @@ pipeline {
     }
 
     stages {
-        // Checkout the code from the Git repository
         stage('Checkout') {
             steps {
                 git branch: 'hassen', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
             }
         }
 
-        // Build the project using Maven
         stage('Build') {
             steps {
                 script {
@@ -25,7 +23,6 @@ pipeline {
             }
         }
 
-        // Run SonarQube analysis
         stage('Run SonarQube Analysis') {
             steps {
                 withCredentials([string(credentialsId: 'SonarQubeToken', variable: 'SONAR_TOKEN')]) {
@@ -36,7 +33,6 @@ pipeline {
             }
         }
 
-        // Build the Docker image
         stage('Build Docker Image') {
             steps {
                 script {
@@ -45,9 +41,9 @@ pipeline {
             }
         }
 
-        // Push the Docker image to Docker Hub
         stage('Push Docker Image') {
             steps {
+                // Use the credentials for Docker login
                 withCredentials([usernamePassword(credentialsId: 'dockerHubToken', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
                     script {
                         sh "docker login -u $DOCKER_USER -p $DOCKER_PASSWORD"
@@ -57,18 +53,15 @@ pipeline {
             }
         }
 
-        // Deploy the application using Docker Compose
         stage('Deploy') {
             steps {
                 script {
-                    // Commands for deployment using docker-compose
                     sh 'docker compose down'
                     sh 'docker compose up -d'
                 }
             }
         }
 
-        // Publish code coverage reports
         stage('Publish Code Coverage') {
             steps {
                 script {
