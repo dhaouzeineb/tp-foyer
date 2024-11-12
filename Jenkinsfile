@@ -129,14 +129,14 @@ pipeline {
                 sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
         }
-
+/*
         stage('Push Docker Image to DockerHub') {
             steps {
                 // Push the Docker image to DockerHub repository
                 sh 'docker push xhalakox/foyer_backend:latest'
             }
         }
-
+*/
         stage('Deploy with Docker Compose') {
             steps {
                 // Deploy the application using Docker Compose, detached mode
