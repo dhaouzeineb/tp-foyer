@@ -8,11 +8,10 @@ import java.util.Date;
 import java.util.Set;
 
 @Entity
+@Access(AccessType.FIELD)  // Explicitly set field access for Hibernate
 @Getter
 @Setter
 @AllArgsConstructor
-
-//test git
 @NoArgsConstructor
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -31,6 +30,3 @@ public class Etudiant {
     Set<Reservation> reservations;
 
 }
-
-
-
