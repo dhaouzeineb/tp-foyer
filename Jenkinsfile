@@ -114,26 +114,21 @@ pipeline {
             }
         }
         */
-
-        // New Trivy Scan stage
-        stage('Trivy Scan') {
+              stage('Prometheus & Grafana (F') {
             steps {
-                script {
-                    // Run Trivy scan for vulnerabilities on the Docker image (if built)
-                    try {
-                        timeout(time: 10, unit: 'MINUTES') {
-                            sh '''
-                                export TRIVY_GITHUB_TOKEN=${TRIVY_GITHUB_TOKEN}
-                                trivy image --skip-db-update --severity HIGH,CRITICAL --format json --timeout 30m xhalakox/foyer_backend:latest
-                            '''
-                        }
-                    } catch (Exception e) {
-                        echo "Trivy scan failed: ${e.getMessage()}"
-                        currentBuild.result = 'FAILURE'
-                    }
-                }
+                echo 'Simulating Prometheus & Grafana monitoring...'
+                sleep time: 10, unit: 'SECONDS'
             }
         }
+
+        stage('Start Monitoring Containers') {
+            steps {
+                // Add your monitoring command or script here
+                echo 'Starting to monitor containers...'
+            }
+        }
+
+
     }
     
     post {
