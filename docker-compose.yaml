@@ -29,35 +29,9 @@ services:
     networks:
       - foyer-network
 
-  my-prometheus:
-    image: prom/prometheus
-    container_name: my-prometheus
-    restart: unless-stopped
-    ports:
-      - "9091:9090"  # Change the host port to 9091
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus  # Persistent data volume for Prometheus
-    networks:
-      - foyer-network
-
-  my-grafana:
-    image: grafana/grafana
-    container_name: my-grafana
-    restart: unless-stopped
-    ports:
-      - "3001:3000"  # Change the host port to 3001
-    volumes:
-      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
-      - grafana_data:/var/lib/grafana  # Persistent data volume for Grafana
-    networks:
-      - foyer-network
-
 networks:
   foyer-network:
     driver: bridge
 
 volumes:
-  db_data:           # MySQL data storage
-  prometheus_data:    # Prometheus data storage
-  grafana_data:       # Grafana data storage
+  db_data:
