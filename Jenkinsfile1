@@ -36,7 +36,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${DOCKER_HUB_REPO}:latest ."
+                    sh "sudo docker build -t ${DOCKER_HUB_REPO}:latest ."
                 }
             }
         }
@@ -46,8 +46,8 @@ pipeline {
                 // Use the credentials for Docker login
                 withCredentials([usernamePassword(credentialsId: 'dockerHubToken', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
                     script {
-                        sh "docker login -u $DOCKER_USER -p $DOCKER_PASSWORD"
-                        sh "docker push ${DOCKER_HUB_REPO}:latest"
+                        sh "sudo docker login -u $DOCKER_USER -p $DOCKER_PASSWORD"
+                        sh "sudo push ${DOCKER_HUB_REPO}:latest"
                     }
                 }
             }
@@ -56,8 +56,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh 'docker compose down'
-                    sh 'docker compose up -d'
+                    sh 'sudo docker compose down'
+                    sh 'sudo docker compose up -d'
                 }
             }
         }
