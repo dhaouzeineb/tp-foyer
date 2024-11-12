@@ -3,8 +3,16 @@ global:
   evaluation_interval: 10s
 
 scrape_configs:
-  - job_name: 'jenkins'                    # Rename job to describe the target system
-    metrics_path: '/prometheus'            # Make sure each target actually exposes metrics here
+  - job_name: 'tp_foyer'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
     static_configs:
-      - targets: ['192.168.33.10:9090']    # First target (e.g., Prometheus instance on 9090)
-      - targets: ['192.168.33.10:8080']    # Second target (e.g., Jenkins or other service on 8080)
+      - targets: ['app:8089']  # Use service name 'app' and internal port 8089
+        labels:
+          application: 'Foyer Application'
+
+  - job_name: 'jenkins'  # Renamed job for clarity
+    metrics_path: '/prometheus'
+    static_configs:
+      - targets: ['my-prometheus:9090']  # Targeting Prometheus container itself
+      - targets: ['app:8080']  # Assuming 'app' has a Prometheus endpoint on 8080
