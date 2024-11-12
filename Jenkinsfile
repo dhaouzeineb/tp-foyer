@@ -16,8 +16,29 @@ pipeline {
 
         stage('Declarative: Tool Install') {
             steps {
-                // This is typically used to set up any required tools like Maven or Node.js
-                echo "Installing necessary tools"
+                // Install Maven
+                script {
+                    if (!fileExists('/usr/bin/mvn')) {
+                        echo "Installing Maven..."
+                        sh 'apt-get update && apt-get install -y maven'
+                    } else {
+                        echo "Maven is already installed"
+                    }
+                }
+
+                // Install Node.js (if required)
+                script {
+                    if (!fileExists('/usr/bin/node')) {
+                        echo "Installing Node.js..."
+                        sh 'curl -sL https://deb.nodesource.com/setup_16.x | bash -'
+                        sh 'apt-get install -y nodejs'
+                    } else {
+                        echo "Node.js is already installed"
+                    }
+                }
+
+                // Add more tools here as needed
+                echo "All necessary tools installed"
             }
         }
 
@@ -121,6 +142,13 @@ pipeline {
             }
         }
 
+        stage('Email Notification') {
+            steps {
+                mail to: 'you@example.com',
+                     subject: "Build ${currentBuild.fullDisplayName}",
+                     body: "The build ${currentBuild.fullDisplayName} finished with status ${currentBuild.result}"
+            }
+        }
     }
 
     post {
