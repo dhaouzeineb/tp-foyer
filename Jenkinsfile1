@@ -23,9 +23,9 @@ pipeline {
             }
         }
 
-        stage('Mockito & Junit') {
+        stage('Mockito&Junit') {
             steps {
-                sh "${MAVEN_HOME}/bin/mvn test"
+                sh"mvn test"
             }
         }
 
@@ -38,10 +38,14 @@ pipeline {
             }
         }
 
+
+
         stage('Run SonarQube Analysis') {
             steps {
                 withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')]) {
-                    sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
+                    script {
+                        sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
+                    }
                 }
             }
         }
@@ -67,20 +71,21 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerHubToken', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    script {
-                        sh "docker login -u $DOCKER_USER -p $DOCKER_PASSWORD"
-                        sh "docker push ${DOCKER_HUB_REPO}:latest"
-                    }
-                }
+       stage('Push Docker Image') {
+           steps {
+                    withCredentials([usernamePassword(credentialsId: 'dockerHubToken', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+               script {
+                   sh "docker login -u $DOCKER_USER -p $DOCKER_PASSWORD"
+                   sh "docker push wissal005/foyer_backend:latest"
             }
         }
+    }
+}
 
-        stage('Deploy') {
+     stage('Deploy') {
             steps {
                 script {
+                    // Commands for deployment using docker-compose
                     sh 'docker compose down'
                     sh 'docker compose up -d'
                 }
@@ -93,4 +98,3 @@ pipeline {
             echo 'Pipeline completed.'
         }
     }
-}
