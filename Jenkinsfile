@@ -2,12 +2,37 @@ pipeline {
     agent any
 
     environment {
-        SCANNER_HOME = tool 'SonarQube'  
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub') 
-        TRIVY_GITHUB_TOKEN = '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'
+        // Using the SMTP credentials stored under the 'smtp' credential ID
+        SMTP_CREDENTIALS = credentials('smtp')  // Replace 'smtp' with the actual credential ID
     }
 
     stages {
+        stage('Test SMTP Email Notification') {
+            steps {
+                script {
+                    // Fetch SMTP credentials from Jenkins' credentials system
+                    def smtpUser = SMTP_CREDENTIALS.username  // Access SMTP username from the credentials
+                    def smtpPassword = SMTP_CREDENTIALS.password  // Access SMTP password from the credentials
+                    
+                    // Send an email using the SMTP credentials
+                    emailext (
+                        to: 'you@example.com',  // Replace with your email
+                        subject: "SMTP Test - Build ${currentBuild.fullDisplayName}",
+                        body: "This is a test email sent from Jenkins. The build ${currentBuild.fullDisplayName} finished with status ${currentBuild.result}.",
+                        mimeType: 'text/html',
+                        smtpHost: 'smtp.example.com',  // Replace with your SMTP server (e.g., smtp.gmail.com)
+                        smtpPort: '587',  // Use appropriate SMTP port (587 for TLS)
+                        smtpUser: smtpUser,  // Use SMTP username from Jenkins credentials
+                        smtpPassword: smtpPassword,  // Use SMTP password from Jenkins credentials
+                        debug: true
+                    )
+                }
+            }
+        }
+
+        // Commenting out the other stages for now to focus on testing the SMTP functionality
+
+        /*
         stage('Declarative: Checkout SCM') {
             steps {
                 checkout scm
@@ -16,7 +41,6 @@ pipeline {
 
         stage('Declarative: Tool Install') {
             steps {
-                // Install Maven
                 script {
                     if (!fileExists('/usr/bin/mvn')) {
                         echo "Installing Maven..."
@@ -26,7 +50,6 @@ pipeline {
                     }
                 }
 
-                // Install Node.js (if required)
                 script {
                     if (!fileExists('/usr/bin/node')) {
                         echo "Installing Node.js..."
@@ -37,7 +60,6 @@ pipeline {
                     }
                 }
 
-                // Add more tools here as needed
                 echo "All necessary tools installed"
             }
         }
@@ -137,33 +159,11 @@ pipeline {
 
         stage('Start Monitoring Containers') {
             steps {
-                // Add your monitoring command or script here
                 echo 'Starting to monitor containers...'
             }
         }
+        */
 
-        stage('Email Notification') {
-            steps {
-                script {
-                    // Fetch SMTP credentials using Jenkins' credentials system
-                    def smtpUser = credentials('smtp-username')  // Replace with your SMTP username credential ID
-                    def smtpPassword = credentials('smtp-password')  // Replace with your SMTP password credential ID
-                    
-                    // Send email using the SMTP credentials
-                    emailext (
-                        to: 'louaybenabidi@gmail.com',
-                        subject: "Build ${currentBuild.fullDisplayName}",
-                        body: "The build ${currentBuild.fullDisplayName} finished with status ${currentBuild.result}",
-                        mimeType: 'text/html',
-                        smtpHost: 'server1.concourstunisie.com',  // Replace with your SMTP host (e.g., smtp.gmail.com)
-                        smtpPort: '465',  // Use appropriate SMTP port (587 for TLS)
-                        smtpUser: smtpUser,  // Use SMTP username from Jenkins credentials
-                        smtpPassword: smtpPassword,  // Use SMTP password from Jenkins credentials
-                        debug: true
-                    )
-                }
-            }
-        }
     }
 
     post {
