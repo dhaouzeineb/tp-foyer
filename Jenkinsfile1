@@ -5,15 +5,18 @@ pipeline {
         MAVEN_HOME = '/usr/share/maven'
         SONAR_HOST_URL = 'http://192.168.33.10:9000'
         SONAR_PROJECT_KEY = 'foyer'
+        DOCKER_HUB_REPO = 'hassen12/foyer_backend'  // Docker Hub repository
     }
 
     stages {
+        // Checkout the code from the Git repository
         stage('Checkout') {
             steps {
                 git branch: 'hassen', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
             }
         }
 
+        // Build the project using Maven
         stage('Build') {
             steps {
                 script {
@@ -22,6 +25,7 @@ pipeline {
             }
         }
 
+        // Run SonarQube analysis
         stage('Run SonarQube Analysis') {
             steps {
                 withCredentials([string(credentialsId: 'SonarQubeToken', variable: 'SONAR_TOKEN')]) {
@@ -32,6 +36,39 @@ pipeline {
             }
         }
 
+        // Build the Docker image
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker build -t ${DOCKER_HUB_REPO}:latest ."
+                }
+            }
+        }
+
+        // Push the Docker image to Docker Hub
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerHubToken', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    script {
+                        sh "docker login -u $DOCKER_USER -p $DOCKER_PASSWORD"
+                        sh "docker push ${DOCKER_HUB_REPO}:latest"
+                    }
+                }
+            }
+        }
+
+        // Deploy the application using Docker Compose
+        stage('Deploy') {
+            steps {
+                script {
+                    // Commands for deployment using docker-compose
+                    sh 'docker compose down'
+                    sh 'docker compose up -d'
+                }
+            }
+        }
+
+        // Publish code coverage reports
         stage('Publish Code Coverage') {
             steps {
                 script {
@@ -45,6 +82,7 @@ pipeline {
             }
         }
     }
+
     post {
         always {
             echo 'Pipeline completed.'

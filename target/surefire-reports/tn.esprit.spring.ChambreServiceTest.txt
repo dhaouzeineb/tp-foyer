@@ -1,0 +1,57 @@
+-------------------------------------------------------------------------------
+Test set: tn.esprit.spring.ChambreServiceTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 7, Skipped: 0, Time elapsed: 0.079 s <<< FAILURE! -- in tn.esprit.spring.ChambreServiceTest
+tn.esprit.spring.ChambreServiceTest.testRemoveChambre -- Time elapsed: 0.042 s <<< ERROR!
+org.mockito.exceptions.misusing.NullInsteadOfMockException:
+
+Argument passed to when() is null!
+Example of correct stubbing:
+    doThrow(new RuntimeException()).when(mock).someMethod();
+Also, if you use @Mock annotation don't miss openMocks()
+	at tn.esprit.spring.ChambreServiceTest.testRemoveChambre(ChambreServiceTest.java:81)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+tn.esprit.spring.ChambreServiceTest.testRetrieveChambre -- Time elapsed: 0.004 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "tn.esprit.tpfoyer.repository.ChambreRepository.findById(Object)" because "this.chambreRepository" is null
+	at tn.esprit.spring.ChambreServiceTest.testRetrieveChambre(ChambreServiceTest.java:59)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+tn.esprit.spring.ChambreServiceTest.testRecupererChambresSelonTyp -- Time elapsed: 0.003 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "tn.esprit.tpfoyer.repository.ChambreRepository.findAllByTypeC(tn.esprit.tpfoyer.entity.TypeChambre)" because "this.chambreRepository" is null
+	at tn.esprit.spring.ChambreServiceTest.testRecupererChambresSelonTyp(ChambreServiceTest.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+tn.esprit.spring.ChambreServiceTest.testModifyChambre -- Time elapsed: 0.004 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "tn.esprit.tpfoyer.repository.ChambreRepository.save(Object)" because "this.chambreRepository" is null
+	at tn.esprit.spring.ChambreServiceTest.testModifyChambre(ChambreServiceTest.java:90)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+tn.esprit.spring.ChambreServiceTest.testRetrieveAllChambres -- Time elapsed: 0.003 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "tn.esprit.tpfoyer.repository.ChambreRepository.findAll()" because "this.chambreRepository" is null
+	at tn.esprit.spring.ChambreServiceTest.testRetrieveAllChambres(ChambreServiceTest.java:48)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+tn.esprit.spring.ChambreServiceTest.testAddChambre -- Time elapsed: 0.003 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "tn.esprit.tpfoyer.repository.ChambreRepository.save(Object)" because "this.chambreRepository" is null
+	at tn.esprit.spring.ChambreServiceTest.testAddChambre(ChambreServiceTest.java:70)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+tn.esprit.spring.ChambreServiceTest.testTrouverChambreSelonEtudiant -- Time elapsed: 0.003 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "tn.esprit.tpfoyer.repository.ChambreRepository.trouverChselonEt(long)" because "this.chambreRepository" is null
+	at tn.esprit.spring.ChambreServiceTest.testTrouverChambreSelonEtudiant(ChambreServiceTest.java:114)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
