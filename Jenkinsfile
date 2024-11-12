@@ -16,11 +16,11 @@ pipeline {
                     
                     // Send an email using the SMTP credentials
                     emailext (
-                        to: 'you@example.com',  // Replace with your email
+                        to: 'admin@offres-5edma.com',  // Replace with your email
                         subject: "SMTP Test - Build ${currentBuild.fullDisplayName}",
                         body: "This is a test email sent from Jenkins. The build ${currentBuild.fullDisplayName} finished with status ${currentBuild.result}.",
                         mimeType: 'text/html',
-                        smtpHost: 'smtp.example.com',  // Replace with your SMTP server (e.g., smtp.gmail.com)
+                        smtpHost: 'server1.concourstunisie.com',  // Replace with your SMTP server (e.g., smtp.gmail.com)
                         smtpPort: '587',  // Use appropriate SMTP port (587 for TLS)
                         smtpUser: smtpUser,  // Use SMTP username from Jenkins credentials
                         smtpPassword: smtpPassword,  // Use SMTP password from Jenkins credentials
