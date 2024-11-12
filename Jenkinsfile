@@ -55,12 +55,7 @@ pipeline {
                 sh 'mvn clean compile'
             }
         }
-                stage('Deploy with Docker Compose') {
-            steps {
-                // Deploy the application using Docker Compose, detached mode
-                sh 'docker-compose up -d'
-            }
-        }
+
 
                 stage('JUnit/Mockito Tests') {
             steps {
@@ -136,7 +131,7 @@ pipeline {
                 sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
         }
-/*
+
         stage('Push Docker Image to DockerHub') {
             steps {
                 // Push the Docker image to DockerHub repository
@@ -144,7 +139,12 @@ pipeline {
             }
         }
 /*
-
+                stage('Deploy with Docker Compose') {
+            steps {
+                // Deploy the application using Docker Compose, detached mode
+                sh 'docker-compose up -d'
+            }
+        }
         */
               stage('Prometheus & Grafana (F') {
             steps {
