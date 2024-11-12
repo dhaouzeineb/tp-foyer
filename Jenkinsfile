@@ -90,9 +90,11 @@ pipeline {
             }
         }
 
-        stage('Deploy to Nexus') {
+        // Uncomment to upload artifact to Nexus if required
+        stage("NEXUS") {
             steps {
                 script {
+                    // Upload generated JAR artifact to Nexus repository
                     nexusArtifactUploader artifacts: [[
                         artifactId: 'tp-foyer',
                         classifier: '',
