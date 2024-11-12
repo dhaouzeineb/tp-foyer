@@ -10,6 +10,7 @@ import java.util.Set;
 
 
 @Entity
+@Access(AccessType.FIELD)  // Ensure field access for Hibernate
 @Getter
 @Setter
 @AllArgsConstructor
@@ -31,7 +32,5 @@ public class Bloc {
     @OneToMany(mappedBy = "bloc")
     @JsonIgnore
     @ToString.Exclude
-    Set<Chambre> chambres = new HashSet<Chambre>();
-
+    Set<Chambre> chambres = new HashSet<>();
 }
-
