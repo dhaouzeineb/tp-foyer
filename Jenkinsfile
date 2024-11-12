@@ -12,13 +12,6 @@ pipeline {
             
     stages {
 
-                stage('Declarative: Checkout SCM') {
-            steps {
-                checkout scm
-            }
-        }
-
-
             stage('Declarative: Tool Install') {
             steps {
                 // Install Maven
@@ -55,20 +48,13 @@ pipeline {
                 git branch: 'louay', credentialsId: 'github', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
             }
         }
-
-        stage('Build') {
+        stage('Clean and compile') {
             steps {
-                // Clean the project to remove any previous builds
-                sh 'mvn clean'
+                // Clean and compile the project in a single step
+                sh 'mvn clean compile'
             }
         }
 
-        stage('Compile') {
-            steps {
-                // Compile the project to prepare for packaging
-                sh 'mvn compile'
-            }
-        }
                 stage('JUnit/Mockito Tests') {
             steps {
                 sh 'mvn test'
