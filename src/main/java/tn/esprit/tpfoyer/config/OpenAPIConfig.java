@@ -1,4 +1,4 @@
-package com.livrini.restaurant.config;
+package tn.esprit.tpfoyer.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -13,7 +13,7 @@ public class OpenAPIConfig {
     }
 
     public Info infoAPI() {
-        return new Info().title("livrini").description("livrini");
+        return new Info().title("foyer").description("foyer");
     }
 
 }
