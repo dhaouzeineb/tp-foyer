@@ -4,7 +4,7 @@ pipeline {
     environment {
         MAVEN_HOME = '/usr/share/maven'
         SONAR_HOST_URL = 'http://192.168.33.10:9000'
-        SONAR_PROJECT_KEY = 'foyer'
+        SONAR_PROJECT_KEY = 'foyer1'
         DOCKER_HUB_REPO = 'hassen12/foyer_backend'
     }
 
