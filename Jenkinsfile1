@@ -5,7 +5,7 @@ pipeline {
         MAVEN_HOME = '/usr/share/maven'
         SONAR_HOST_URL = 'http://192.168.33.10:9000'
         SONAR_PROJECT_KEY = 'foyer'
-        DOCKER_HUB_REPO = 'hassen12/foyer_backend' // Docker Hub repository
+        DOCKER_HUB_REPO = 'hassen12/foyer_backend'
     }
 
     stages {
@@ -17,61 +17,48 @@ pipeline {
 
         stage('Build') {
             steps {
-                script {
-                    sh "${MAVEN_HOME}/bin/mvn clean install"
+                sh "${MAVEN_HOME}/bin/mvn clean install"
+            }
+        }
+
+        stage('Run Tests & Coverage') {
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn test jacoco:report"
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: 'target/site/jacoco/*', allowEmptyArchive: true
                 }
             }
         }
 
-        stage('Run SonarQube Analysis') {
+        stage('SonarQube Analysis') {
             steps {
                 withCredentials([string(credentialsId: 'SonarQubeToken', variable: 'SONAR_TOKEN')]) {
-                    script {
-                        sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
-                    }
+                    sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
                 }
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Docker Build') {
             steps {
-                script {
-                    sh "docker build -t ${DOCKER_HUB_REPO}:latest ."
-                }
+                sh "docker build -t ${DOCKER_HUB_REPO}:latest ."
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Docker Push') {
             steps {
                 withCredentials([string(credentialsId: 'dockerHubToken', variable: 'DOCKER_TOKEN')]) {
-                    script {
-                        // Log in to Docker and push the image
-                        sh "echo $DOCKER_TOKEN | docker login -u hassen12 --password-stdin"
-                        sh "docker push ${DOCKER_HUB_REPO}:latest"
-                    }
+                    sh "echo $DOCKER_TOKEN | docker login -u hassen12 --password-stdin"
+                    sh "docker push ${DOCKER_HUB_REPO}:latest"
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                script {
-                    sh "docker compose down"
-                    sh "docker compose up -d"
-                }
-            }
-        }
-
-        stage('Publish Code Coverage') {
-            steps {
-                script {
-                    sh "${MAVEN_HOME}/bin/mvn jacoco:report"
-                }
-            }
-            post {
-                success {
-                    archiveArtifacts artifacts: 'target/', allowEmptyArchive: true
-                }
+                sh "docker compose down"
+                sh "docker compose up -d"
             }
         }
     }

@@ -26,6 +26,7 @@ tn\esprit\tpfoyer\entity\Foyer.class
 tn\esprit\tpfoyer\control\BlocRestController.class
 tn\esprit\tpfoyer\control\UniversiteRestController.class
 tn\esprit\tpfoyer\entity\Universite.class
+tn\esprit\tpfoyer\config\OpenAPIConfig.class
 tn\esprit\tpfoyer\control\FoyerRestController.class
 tn\esprit\tpfoyer\repository\FoyerRepository.class
 tn\esprit\tpfoyer\control\EtudiantRestController.class
