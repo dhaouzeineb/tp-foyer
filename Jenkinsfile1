@@ -5,7 +5,7 @@ pipeline {
         MAVEN_HOME = '/usr/share/maven'
         SONAR_HOST_URL = 'http://192.168.33.10:9000'
         SONAR_PROJECT_KEY = 'foyer'
-        DOCKER_HUB_REPO = 'hassen12/foyer_backend'  // Docker Hub repository
+        DOCKER_HUB_REPO = 'hassen12/foyer_backend' // Docker Hub repository
     }
 
     stages {
@@ -45,7 +45,8 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'dockerHubToken', variable: 'DOCKER_TOKEN')]) {
                     script {
-                        sh "echo $DOCKER_TOKEN | docker login -u $DOCKER_USER --password-stdin"
+                        // Log in to Docker and push the image
+                        sh "echo $DOCKER_TOKEN | docker login -u hassen12 --password-stdin"
                         sh "docker push ${DOCKER_HUB_REPO}:latest"
                     }
                 }
