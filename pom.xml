@@ -10,7 +10,7 @@
     </parent>
     <groupId>tn.esprit</groupId>
     <artifactId>tp-foyer</artifactId>
-    <version>5.0.1-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
     <name>tp-foyer</name>
     <description>tp-foyer</description>
     <properties>
@@ -18,29 +18,6 @@
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
     </properties>
-	<distributionManagement>
-		<!-- Repository for releases -->
-		<repository>
-			<id>deploymentRepo</id> <!-- This ID matches the one in settings.xml -->
-			<name>Nexus Repository</name>
-			<url>http://192.168.33.10/:8081/repository/maven-releases/</url>
-		</repository>
-
-		<!-- Repository for snapshots (if you use snapshots) -->
-		<snapshotRepository>
-			<id>deploymentRepo</id>
-			<name>Nexus Snapshot Repository</name>
-			<url>http://192.168.33.10:8081/repository/maven-snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
-
-	<!-- Other necessary configurations -->
-	<repositories>
-		<repository>
-			<id>deploymentRepo</id>
-			<url>http://192.168.33.10:8081/repository/maven-releases/</url>
-		</repository>
-	</repositories>
 
     <dependencies>
 
@@ -101,7 +78,18 @@
 
 
     </dependencies>
-
+	<distributionManagement>
+		<repository>
+			<id>deploymentRepo</id>
+			<name>Nexus Repository</name>
+			<url>http://192.168.33.10:8081/repository/maven-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>deploymentRepo</id>
+			<name>Nexus Snapshot Repository</name>
+			<url>http://192.168.33.10:8081/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
     <build>
         <plugins>
