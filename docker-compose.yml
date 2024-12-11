@@ -37,7 +37,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - /c/Users/msi/Desktop/tp-foyer/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
 
   my-grafana:
     image: grafana/grafana
@@ -46,7 +46,7 @@ services:
     ports:
       - "3001:3000"
     volumes:
-      - /c/Users/msi/Desktop/tp-foyer/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml:ro
+      - ./grafana:/etc/grafana/provisioning/datasources:ro
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: password
