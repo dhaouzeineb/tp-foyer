@@ -2,10 +2,10 @@ pipeline {
     agent any
 
     environment {
-        MAVEN_HOME = '/usr/share/maven'
-        SONAR_HOST_URL = 'http://10.0.2.15:9000'
-        SONAR_PROJECT_KEY = 'foyer'
-        DOCKER_HUB_REPO = 'wissal005/foyer_backend'
+        MAVEN_HOME = '/usr/share/maven'                   // Path to Maven installation
+        SONAR_HOST_URL = 'http://10.0.2.15:9000'          // SonarQube server URL
+        SONAR_PROJECT_KEY = 'foyer'                       // SonarQube project key
+        DOCKER_HUB_REPO = 'wissal005/foyer_backend'       // Docker Hub repository
     }
 
     stages {
@@ -17,18 +17,14 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh "${MAVEN_HOME}/bin/mvn clean install"
-            }
-        }
-
-        stage('Run Tests & Coverage') {
-            steps {
-                sh "${MAVEN_HOME}/bin/mvn test jacoco:report"
-            }
-            post {
-                success {
-                    archiveArtifacts artifacts: 'target/site/jacoco/*', allowEmptyArchive: true
+                script {
+                    sh "${MAVEN_HOME}/bin/mvn clean install"
                 }
+            }
+
+        stage('Mockito&Junit') {
+            steps {
+                sh"mvn test"
             }
         }
 
@@ -41,33 +37,56 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
+
+
+        stage('Run SonarQube Analysis') {
             steps {
                 withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')]) {
-                    sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
+                    script {
+                        sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
+                    }
+                }
+            }
+
+        stage('Publish Code Coverage') {
+            steps {
+                script {
+                    sh "${MAVEN_HOME}/bin/mvn jacoco:report"
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: 'target/', allowEmptyArchive: true
                 }
             }
         }
 
-        stage('Docker Build') {
+        stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${DOCKER_HUB_REPO}:latest ."
-            }
-        }
-
-        stage('Docker Push') {
-            steps {
-                withCredentials([string(credentialsId: 'dockerHubToken', variable: 'DOCKER_TOKEN')]) {
-                    sh "echo $DOCKER_TOKEN | docker login -u wissal005 --password-stdin"
-                    sh "docker push ${DOCKER_HUB_REPO}:latest"
+                script {
+                    sh "docker build -t ${DOCKER_HUB_REPO}:latest ."
                 }
             }
         }
 
-        stage('Deploy') {
+       stage('Push Docker Image') {
+           steps {
+                    withCredentials([usernamePassword(credentialsId: 'dockerHubToken', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+               script {
+                   sh "docker login -u $DOCKER_USER -p $DOCKER_PASSWORD"
+                   sh "docker push wissal005/foyer_backend:latest"
+            }
+        }
+    }
+}
+
+     stage('Deploy') {
             steps {
-                sh "docker compose down"
-                sh "docker compose up -d"
+                script {
+                    // Commands for deployment using docker-compose
+                    sh 'docker compose down'
+                    sh 'docker compose up -d'
+                }
             }
         }
     }
