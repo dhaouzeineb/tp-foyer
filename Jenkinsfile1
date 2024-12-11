@@ -21,7 +21,6 @@ pipeline {
                     sh "${MAVEN_HOME}/bin/mvn clean install"
                 }
             }
-        }
 
         stage('Mockito&Junit') {
             steps {
@@ -48,7 +47,6 @@ pipeline {
                     }
                 }
             }
-        }
 
         stage('Publish Code Coverage') {
             steps {
