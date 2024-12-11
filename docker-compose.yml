@@ -37,7 +37,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - /c/Users/msi/Desktop/tp-foyer/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /c/Users/msi/Desktop/tp-foyer/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
 
   my-grafana:
     image: grafana/grafana
