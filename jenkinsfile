@@ -1,0 +1,80 @@
+pipeline {
+    agent any
+
+    environment {
+        MAVEN_HOME = '/usr/share/maven'
+        SONAR_HOST_URL = 'http://10.0.2.15:9000'
+        SONAR_PROJECT_KEY = 'foyer'
+        DOCKER_HUB_REPO = 'wissal005/foyer_backend'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'wissal', url: 'https://github.com/dhaouzeineb/tp-foyer.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn clean install"
+            }
+        }
+
+        stage('Run Tests & Coverage') {
+            steps {
+                sh "${MAVEN_HOME}/bin/mvn test jacoco:report"
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: 'target/site/jacoco/*', allowEmptyArchive: true
+                }
+            }
+        }
+
+        stage('Deploy to Nexus') {
+            steps {
+                echo 'Deploying to Nexus...'
+                withCredentials([usernamePassword(credentialsId: 'nexus-credentials-id', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
+                    sh "${MAVEN_HOME}/bin/mvn deploy -DskipTests -DaltDeploymentRepository=deploymentRepo::default::http://$NEXUS_USERNAME:$NEXUS_PASSWORD@10.0.2.15:8081/repository/maven-snapshots/"
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')]) {
+                    sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh "docker build -t ${DOCKER_HUB_REPO}:latest ."
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                withCredentials([string(credentialsId: 'dockerHubToken', variable: 'DOCKER_TOKEN')]) {
+                    sh "echo $DOCKER_TOKEN | docker login -u wissal005 --password-stdin"
+                    sh "docker push ${DOCKER_HUB_REPO}:latest"
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh "docker compose down"
+                sh "docker compose up -d"
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline completed.'
+        }
+    }
+}
