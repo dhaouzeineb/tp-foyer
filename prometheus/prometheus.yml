@@ -7,6 +7,6 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     scrape_interval: 5s
     static_configs:
-      - targets: ['app:8089']
+      - targets: ['192.168.33.10:8089']
         labels:
           application: 'foyer-backend'
